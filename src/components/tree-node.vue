@@ -8,7 +8,8 @@
             <span class="node-load"></span>
             <span class="node-title">{{nodeData.name}}</span>
         </div>
-        <tree :options="options"
+        <tree v-show="open"
+              :options="options"
               :treeData="nodeData.children"
               :level="level + 1"
               @nodeCheckChange="nodeCheckChange"
