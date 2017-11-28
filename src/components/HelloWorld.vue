@@ -1,31 +1,42 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-      <br>
-      <li><a href="http://vuejs-templates.github.io/webpack/" target="_blank">Docs for This Template</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
+    <tree :options="options" :treeData="treeData">
+    </tree>
   </div>
 </template>
 
 <script>
+    import Tree from './tree.vue'
 export default {
   name: 'HelloWorld',
+  components: {Tree},
   data() {
     return {
-      msg: 'Welcome to Your Vue.js App',
+        options: {},
+        treeData: [
+            {
+                id: 1,
+                name: "test1",
+                checkedStatus: 0,
+                children: [
+                    {
+                        id: 3,
+                        name: "test3",
+                        checkedStatus: 0,
+                    },
+                    {
+                        id: 4,
+                        name: "test4",
+                        checkedStatus: 0,
+                    },
+                ]
+            },
+            {
+                id: 2,
+                name: "test2",
+                checkedStatus: 0,
+            }
+        ]
     };
   },
 };

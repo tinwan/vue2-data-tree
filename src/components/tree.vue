@@ -6,6 +6,7 @@
                        :treeData="treeData"
                        :nodeData="item"
                        :level="level"
+                       @nodeCheckChange="nodeCheckChange"
             >
             </tree-node>
         </li>
@@ -35,6 +36,7 @@
                 default: 0
             }
         },
+        components: {TreeNode},
         created () {
             let defaultOptions = {
                 checkable: {
@@ -63,10 +65,39 @@
             }
         },
         methods: {
+            nodeCheckChange (item) {
+                let checkedNum = 0;
+
+                this.treeData.forEach((data) => {
+                    if (item.id !== data.id) {
+                        Vue.set(data, "checkStatus", item.checkStatus);
+                        checkedNum += item.checkStatus;
+                    } else {
+                        checkedNum += data.checkStatus;
+                    }
+                });
+
+                if (checkedNum === 0) {
+                    this.emit("nodeCheckChange", 0);
+                } else if (checkedNum === 2 * this.treeData.length) {
+                    this.emit("nodeCheckChange", 2);
+                } else {
+                    this.emit("nodeCheckChange", this.options.checkable.halfCheckable ? 1 : 0);
+                }
+            }
         },
     }
 </script>
 
 <style>
+    .vue-data-tree {
+
+    }
+    .vue-data-tree ul,
+    .vue-data-tree li {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
 
 </style>
