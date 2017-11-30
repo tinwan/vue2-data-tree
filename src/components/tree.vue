@@ -1,12 +1,11 @@
 <template>
     <ul v-if="treeData && treeData.length" class="vue-data-tree">
         <li v-for="(item, index) in treeData"
-            :class="{'data-tree-li': true, 'first-node': level === 0 && index === 0, 'only-node': level === 0 && treeData.length === 1}">
+            :class="{'data-tree-li': true, 'first-node': index === 0, 'only-node': treeData.length === 1}">
             <tree-node :options="optionSettings"
                        :treeData="treeData"
                        :nodeData="item"
-                       :level="level"
-                       @nodeCheckChange="nodeCheckChange"
+                       :level="0"
             >
             </tree-node>
         </li>
@@ -26,15 +25,11 @@
     import Vue from "vue";
     import TreeNode from './tree-node.vue'
 
-    export default {
-        name: "tree",
+    const Tree = {
+        name: "Tree",
         props: {
             options: Object,
             treeData: Array,
-            level: {
-                type: Number,
-                default: 0
-            }
         },
         components: {TreeNode},
         created () {
@@ -65,28 +60,10 @@
             }
         },
         methods: {
-            nodeCheckChange (item) {
-                let checkedNum = 0;
-
-                this.treeData.forEach((data) => {
-                    if (item.id !== data.id) {
-                        Vue.set(data, "checkStatus", item.checkStatus);
-                        checkedNum += item.checkStatus;
-                    } else {
-                        checkedNum += data.checkStatus;
-                    }
-                });
-
-                if (checkedNum === 0) {
-                    this.emit("nodeCheckChange", 0);
-                } else if (checkedNum === 2 * this.treeData.length) {
-                    this.emit("nodeCheckChange", 2);
-                } else {
-                    this.emit("nodeCheckChange", this.options.checkable.halfCheckable ? 1 : 0);
-                }
-            }
         },
-    }
+    };
+
+    export default Tree;
 </script>
 
 <style>

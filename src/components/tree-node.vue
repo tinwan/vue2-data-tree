@@ -8,22 +8,24 @@
             <span class="node-load"></span>
             <span class="node-title">{{nodeData.name}}</span>
         </div>
-        <tree v-show="open"
-              :options="options"
-              :treeData="nodeData.children"
-              :level="level + 1"
-              @nodeCheckChange="nodeCheckChange"
-        >
-        </tree>
+        <ul v-if="nodeData.children && nodeData.children.length" v-show="open">
+            <li v-for="(item, index) in nodeData.children">
+                <tree-node :options="options"
+                           :nodeData="item"
+                           :level="level + 1"
+                           @nodeCheckChange="nodeCheckChange"
+                >
+                </tree-node>
+            </li>
+        </ul>
     </div>
 </template>
 
 <script>
     import Vue from "vue";
-    import Tree from './tree.vue'
 
-    export default {
-        name: "treeNode",
+    const TreeNode = {
+        name: "TreeNode",
         props: {
             options: Object,
             nodeData: Object,
@@ -32,7 +34,6 @@
                 default: 0
             }
         },
-        components: {Tree},
         data () {
             return {
                 open: false
@@ -55,14 +56,39 @@
                     Vue.set(this.nodeData, "children", newChildren);
                 }
             },
-            nodeCheckChange (checkStatus) {
-                Vue.set(this.nodeData, "checkStatus", checkStatus);
+            nodeCheckChange (item) {
+                if (!this.options.level) {
+                    return;
+                }
+
+                let checkedNum = 0, checkStatus;
+
+                this.nodeData.children.forEach((data) => {
+                    if (item.id !== data.id) {
+                        Vue.set(data, "checkStatus", item.checkStatus);
+                        checkedNum += item.checkStatus;
+                    } else {
+                        checkedNum += data.checkStatus;
+                    }
+                });
+
+                if (checkedNum === 0) {
+                    checkStatus = 0;
+                } else if (checkedNum === 2 * this.nodeData.children.length) {
+                    checkStatus = 2;
+                } else {
+                    checkStatus = this.options.checkable.halfCheckable ? 1 : 0;
+                }
+
+                this.emit("nodeCheckChange", checkStatus);
             },
             clickExpand () {
                 this.open = !this.open;
             }
         }
-    }
+    };
+
+    export default TreeNode;
 </script>
 
 <style>
