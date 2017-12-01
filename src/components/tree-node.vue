@@ -3,7 +3,7 @@
         <div class="data-tree-el">
             <span :class="{'node-expand': true, 'close': !open}" @click="clickExpand"></span>
             <span v-if="options.checkable"
-                  :class="['node-check', ['unchecked', 'halfChecked', 'checked'][nodeData.checkStatus]]"
+                  :class="['node-check', ['', 'halfChecked', 'checked'][nodeData.checkStatus]]"
                   @click="clickCheckBox"></span>
             <span class="node-load"></span>
             <span class="node-title">{{nodeData.name}}</span>
@@ -53,33 +53,7 @@
                     this.$emit("nodeDataChange", {...this.nodeData, checkStatus: newStatus});
                 }
             },
-            nodeCheckChange (item) {
-                if (!this.options.level) {
-                    return;
-                }
-
-                let checkedNum = 0, checkStatus;
-
-                this.nodeData.children.forEach((data) => {
-                    if (item.id !== data.id) {
-                        Vue.set(data, "checkStatus", item.checkStatus);
-                        checkedNum += item.checkStatus;
-                    } else {
-                        checkedNum += data.checkStatus;
-                    }
-                });
-
-                if (checkedNum === 0) {
-                    checkStatus = 0;
-                } else if (checkedNum === 2 * this.nodeData.children.length) {
-                    checkStatus = 2;
-                } else {
-                    checkStatus = this.options.checkable.halfCheckable ? 1 : 0;
-                }
-
-                this.$emit("nodeDataChange", {...this.nodeData, checkStatus: checkStatus});
-            },
-            nodeDataChange (item) {console.log(111);
+            nodeDataChange (item) {
                 let checkedNum = 0, checkStatus;
                 let newChildren = this.nodeData.children.map((child) => {
                     if (child.id === item.id) {

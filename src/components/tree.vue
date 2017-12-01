@@ -68,16 +68,14 @@
         methods: {
             nodeDataChange (item) {
                 let index;
-                let newChildren = this.showData.map((child, idx) => {
+
+                this.showData.forEach((child, idx) => {
                     if (child.id === item.id) {
                         index = idx;
-                        return item;
                     }
-                    return child;
                 });
 
-//                this.showData = newChildren;console.log(222)
-                Vue.set(this.showData, index, item);console.log(222)
+                Vue.set(this.showData, index, item);
             },
         },
     };
