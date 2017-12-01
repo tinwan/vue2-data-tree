@@ -12,6 +12,7 @@
             <li v-for="(item, index) in nodeData.children">
                 <tree-node :options="options"
                            :nodeData="item"
+                           @nodeDataChange="nodeDataChange"
                            :level="level + 1"
                            @nodeCheckChange="nodeCheckChange"
                 >
@@ -40,20 +41,16 @@
             }
         },
         methods: {
-            clickCheckBox () {
-                let newStatus = this.nodeData.checkStatus === 0 ? 2: 0;
+            clickCheckBox () { console.log(0)
+                let newStatus = this.nodeData.checkStatus === 2 ? 0: 2;
 
-                Vue.set(this.nodeData, "checkStatus", newStatus);
-
-                if (this.options.checkable.cascade.parent) {
-                    this.emit("nodeCheckChange", this.nodeData)
-                }
-
-                if (this.options.checkable.cascade.child) {
-                    let newChildren = nodeData.children.map((item) => {
+                if (this.options.checkable.cascade.child && this.nodeData.children) {
+                    let newChildren = this.nodeData.children.map((item) => {
                         return {...item, checkStatus: newStatus};
                     });
-                    Vue.set(this.nodeData, "children", newChildren);
+                    this.$emit("nodeDataChange", {...this.nodeData, checkStatus: newStatus, children: newChildren});
+                } else {
+                    this.$emit("nodeDataChange", {...this.nodeData, checkStatus: newStatus});
                 }
             },
             nodeCheckChange (item) {
@@ -80,7 +77,31 @@
                     checkStatus = this.options.checkable.halfCheckable ? 1 : 0;
                 }
 
-                this.emit("nodeCheckChange", checkStatus);
+                this.$emit("nodeDataChange", {...this.nodeData, checkStatus: checkStatus});
+            },
+            nodeDataChange (item) {console.log(111);
+                let checkedNum = 0, checkStatus;
+                let newChildren = this.nodeData.children.map((child) => {
+                    if (child.id === item.id) {
+                        checkedNum += item.checkStatus || 0;
+                        return item;
+                    }
+                    checkedNum += child.checkStatus || 0;
+                    return child;
+                });
+
+                if (this.options.checkable.cascade.parent) {
+                    if (checkedNum === 0) {
+                        checkStatus = 0;
+                    } else if (checkedNum === 2 * this.nodeData.children.length) {
+                        checkStatus = 2;
+                    } else {
+                        checkStatus = this.options.checkable.halfCheckable ? 1 : 0;
+                    }
+                    this.$emit("nodeDataChange", {...this.nodeData, checkStatus: checkStatus, children: newChildren});
+                } else {
+                    this.$emit("nodeDataChange", {...this.nodeData, children: newChildren});
+                }
             },
             clickExpand () {
                 this.open = !this.open;
@@ -129,5 +150,30 @@
         display: inline-block;
         left: calc((100% - 1px)/2);
         top: 2px;
+    }
+    .vue-data-tree .node-check {
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        border: 1px solid #888888;
+        border-radius: 2px;
+        position: relative;
+    }
+    .vue-data-tree .node-check.checked:before {
+        content: "\2713";
+        display: block;
+        position: absolute;
+        width: 100%;
+        text-align: center;
+    }
+    .vue-data-tree .node-check.halfChecked:before {
+        content:"\2713";
+        display:block;
+        position:absolute;
+        width:100%;
+        height:100%;
+        background-color:#888888;
+        z-index:1;
+        color:#ffffff;
     }
 </style>

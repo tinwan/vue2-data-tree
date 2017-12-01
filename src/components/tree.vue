@@ -1,10 +1,11 @@
 <template>
-    <ul v-if="treeData && treeData.length" class="vue-data-tree">
-        <li v-for="(item, index) in treeData"
-            :class="{'data-tree-li': true, 'first-node': index === 0, 'only-node': treeData.length === 1}">
+    <ul v-if="showData && showData.length" class="vue-data-tree">
+        <li v-for="(item, index) in showData"
+            :class="{'data-tree-li': true, 'first-node': index === 0, 'only-node': showData.length === 1}">
             <tree-node :options="optionSettings"
-                       :treeData="treeData"
+                       :treeData="showData"
                        :nodeData="item"
+                       @nodeDataChange="nodeDataChange"
                        :level="0"
             >
             </tree-node>
@@ -31,6 +32,11 @@
             options: Object,
             treeData: Array,
         },
+        data () {
+            return {
+                showData: null
+            }
+        },
         components: {TreeNode},
         created () {
             let defaultOptions = {
@@ -54,12 +60,25 @@
             }
 
             this.optionSettings = newOptions;
+            this.showData = [...this.treeData];
         },
-        data () {
-            return {
-            }
+        updated () {
+            console.log(this.showData);
         },
         methods: {
+            nodeDataChange (item) {
+                let index;
+                let newChildren = this.showData.map((child, idx) => {
+                    if (child.id === item.id) {
+                        index = idx;
+                        return item;
+                    }
+                    return child;
+                });
+
+//                this.showData = newChildren;console.log(222)
+                Vue.set(this.showData, index, item);console.log(222)
+            },
         },
     };
 

@@ -17,24 +17,24 @@ export default {
             {
                 id: 1,
                 name: "test1",
-                checkedStatus: 0,
+                checkStatus: 0,
                 children: [
                     {
                         id: 3,
                         name: "test3",
-                        checkedStatus: 0,
+                        checkStatus: 0,
                     },
                     {
                         id: 4,
                         name: "test4",
-                        checkedStatus: 0,
+                        checkStatus: 0,
                     },
                 ]
             },
             {
                 id: 2,
                 name: "test2",
-                checkedStatus: 0,
+                checkStatus: 0,
             }
         ]
     };
