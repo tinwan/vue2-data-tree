@@ -5,6 +5,7 @@
             <tree-node :options="optionSettings"
                        :treeData="showData"
                        :nodeData="item"
+                       :bus="bus"
                        @nodeDataChange="nodeDataChange"
                        :level="0"
             >
@@ -47,6 +48,7 @@
                         child: true,
                     },
                 },
+                selectable: true
             };
             let newOptions = {};
 
@@ -59,8 +61,11 @@
                 newOptions.checkable = {...defaultOptions.checkable};
             }
 
+            newOptions.selectable = this.options.selectable === false ? false : true;
+
             this.optionSettings = newOptions;
             this.showData = [...this.treeData];
+            this.bus = new Vue();
         },
         methods: {
             nodeDataChange (item) {

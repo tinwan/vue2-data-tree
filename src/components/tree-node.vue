@@ -10,12 +10,15 @@
                   :class="['node-check', ['', 'halfChecked', 'checked'][nodeData.checkStatus]]"
                   @click="clickCheckBox"></span>
             <span class="node-load"></span>
-            <span class="node-title">{{nodeData.name}}</span>
+            <span :class="['node-title', selected ? 'selected' : '']"
+                  @click="clickTitle"
+            >{{nodeData.name}}</span>
         </div>
         <ul v-if="nodeData.children && nodeData.children.length" v-show="open">
             <li v-for="(item, index) in nodeData.children">
                 <tree-node :options="options"
                            :nodeData="item"
+                           :bus="bus"
                            @nodeDataChange="nodeDataChange"
                            :level="level + 1"
                 >
@@ -33,6 +36,7 @@
         props: {
             options: Object,
             nodeData: Object,
+            bus: Object,
             level: {
                 type: Number,
                 default: 0
@@ -40,8 +44,16 @@
         },
         data () {
             return {
-                open: false
+                open: false,
+                selected: false
             }
+        },
+        created () {
+            this.bus.$on("nodeSelected", id => {
+                if (this.nodeData.id !== id) {
+                    this.selected = false;
+                }
+            });
         },
         methods: {
             clickCheckBox () {
@@ -55,6 +67,14 @@
                 } else {
                     this.$emit("nodeDataChange", {...this.nodeData, checkStatus: newStatus});
                 }
+            },
+            clickTitle () {
+                if (!this.options.selectable) {
+                    return;
+                }
+
+                this.selected = true;
+                this.bus.$emit("nodeSelected", this.nodeData.id);
             },
             nodeDataChange (item) {
                 let checkedNum = 0, checkStatus;
@@ -75,9 +95,16 @@
                     } else {
                         checkStatus = this.options.checkable.halfCheckable ? 1 : 0;
                     }
-                    this.$emit("nodeDataChange", {...this.nodeData, checkStatus: checkStatus, children: newChildren});
+                    this.$emit("nodeDataChange", {
+                        ...this.nodeData,
+                        checkStatus: checkStatus,
+                        children: newChildren
+                    });
                 } else {
-                    this.$emit("nodeDataChange", {...this.nodeData, children: newChildren});
+                    this.$emit("nodeDataChange", {
+                        ...this.nodeData,
+                        children: newChildren
+                    });
                 }
             },
             clickExpand () {
@@ -152,17 +179,31 @@
         text-align: center;
     }
     .vue-data-tree .node-check.halfChecked {
-        background-color:#888888;
+        background-color: #888888;
     }
     .vue-data-tree .node-check.halfChecked:before {
-        content:"\2713";
-        display:block;
-        position:absolute;
-        width:100%;
-        height:100%;
-        color:#ffffff;
+        content: "\2713";
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        color: #ffffff;
         line-height: 11px;
         text-align: center;
+    }
+    .vue-data-tree .node-title {
+        display: inline-block;
+        position: relative;
+        top: -2px;
+        cursor: pointer;
+        border: 1px solid #FFFFFF;
+        padding: 0 2px;
+    }
+    .vue-data-tree .node-title.selected {
+        background-color: #F2F5FA;
+        color: #000000;
+        border: 1px solid #DAE3EC;
+        opacity: 1;
     }
     .vue-data-tree ul {
         position: relative;
