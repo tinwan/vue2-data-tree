@@ -1,6 +1,10 @@
 <template>
   <div class="hello">
-    <tree :options="options" :treeData="treeData">
+    <tree :options="options"
+          :treeData="treeData"
+          @nodeSelected="nodeSelected"
+          @nodeChecked="nodeChecked"
+    >
     </tree>
   </div>
 </template>
@@ -42,6 +46,14 @@ export default {
         ]
     };
   },
+    methods: {
+      nodeSelected (node) {
+          console.log("select node: " + node.id);
+      },
+      nodeChecked (node) {
+          console.log("check node: " + node.id);
+      }
+    }
 };
 </script>
 

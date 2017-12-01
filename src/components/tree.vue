@@ -66,6 +66,12 @@
             this.optionSettings = newOptions;
             this.showData = [...this.treeData];
             this.bus = new Vue();
+            this.bus.$on("nodeSelected", node => {
+                this.$emit("nodeSelected", node);
+            });
+            this.bus.$on("nodeChecked", node => {
+                this.$emit("nodeChecked", node);
+            });
         },
         methods: {
             nodeDataChange (item) {

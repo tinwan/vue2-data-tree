@@ -49,24 +49,29 @@
             }
         },
         created () {
-            this.bus.$on("nodeSelected", id => {
-                if (this.nodeData.id !== id) {
+            this.bus.$on("nodeSelected", node => {
+                if (this.nodeData.id !== node.id) {
                     this.selected = false;
                 }
             });
         },
         methods: {
             clickCheckBox () {
-                let newStatus = this.nodeData.checkStatus === 2 ? 0: 2;
+                let newStatus = this.nodeData.checkStatus === 2 ? 0: 2, newNodeData;
 
                 if (this.options.checkable.cascade.child && this.nodeData.children) {
                     let newChildren = this.nodeData.children.map((item) => {
                         return {...item, checkStatus: newStatus};
                     });
-                    this.$emit("nodeDataChange", {...this.nodeData, checkStatus: newStatus, children: newChildren});
+
+                    newNodeData = {...this.nodeData, checkStatus: newStatus, children: newChildren};
                 } else {
-                    this.$emit("nodeDataChange", {...this.nodeData, checkStatus: newStatus});
+                    newNodeData = {...this.nodeData, checkStatus: newStatus};
                 }
+
+                this.$emit("nodeDataChange", newNodeData);
+
+                this.bus.$emit("nodeChecked", newNodeData);
             },
             clickTitle () {
                 if (!this.options.selectable) {
@@ -74,7 +79,8 @@
                 }
 
                 this.selected = true;
-                this.bus.$emit("nodeSelected", this.nodeData.id);
+
+                this.bus.$emit("nodeSelected", this.nodeData);
             },
             nodeDataChange (item) {
                 let checkedNum = 0, checkStatus;
@@ -95,6 +101,7 @@
                     } else {
                         checkStatus = this.options.checkable.halfCheckable ? 1 : 0;
                     }
+
                     this.$emit("nodeDataChange", {
                         ...this.nodeData,
                         checkStatus: checkStatus,
@@ -235,7 +242,7 @@
         width: 0;
         height: 100%;
         border-left: 1px dashed #888888;
-        left: 4px;
+        left: 5px;
         top: 11px;
     }
     .vue-data-tree li.data-tree-li.only-node:before {
