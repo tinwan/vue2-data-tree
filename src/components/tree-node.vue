@@ -3,7 +3,7 @@
         <div class="data-tree-el">
             <span :class="{'node-expand': true, 'close': !open}" @click="clickExpand"></span>
             <span v-if="options.checkable"
-                  :class="['node-check', ['unchecked', 'halfchecked', 'checked'][nodeData.checkStatus]]"
+                  :class="['node-check', ['unchecked', 'halfChecked', 'checked'][nodeData.checkStatus]]"
                   @click="clickCheckBox"></span>
             <span class="node-load"></span>
             <span class="node-title">{{nodeData.name}}</span>
@@ -157,6 +157,7 @@
         height: 11px;
         border: 1px solid #888888;
         border-radius: 2px;
+        line-height: 11px;
         position: relative;
     }
     .vue-data-tree .node-check.checked:before {
@@ -164,7 +165,11 @@
         display: block;
         position: absolute;
         width: 100%;
+        height: 100%;
         text-align: center;
+    }
+    .vue-data-tree .node-check.halfChecked {
+        background-color:#888888;
     }
     .vue-data-tree .node-check.halfChecked:before {
         content:"\2713";
@@ -172,8 +177,8 @@
         position:absolute;
         width:100%;
         height:100%;
-        background-color:#888888;
-        z-index:1;
         color:#ffffff;
+        line-height: 11px;
+        text-align: center;
     }
 </style>
