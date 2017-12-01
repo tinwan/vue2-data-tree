@@ -1,5 +1,5 @@
 <template>
-    <div class="data-tree-node">
+    <div :class="['data-tree-node', nodeData.hasChildren? '': 'leaf']">
         <div class="data-tree-el">
             <span v-if="nodeData.hasChildren"
                   :class="{'node-expand': true, 'close': !open}"
@@ -94,6 +94,9 @@
         text-align: left;
         padding-left: 20px;
         font-size: 14px;
+    }
+    .vue-data-tree .data-tree-node.leaf {
+        padding-left: 25px;
     }
     .vue-data-tree .data-tree-el {
         height: 20px;
