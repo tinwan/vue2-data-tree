@@ -16,7 +16,8 @@ export default {
   components: {Tree},
   data() {
     return {
-        options: {},
+        options: {
+        },
         treeData: [
             {
                 id: 1,

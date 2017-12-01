@@ -58,7 +58,11 @@
                     cascade: {...defaultOptions.checkable.cascade, ...this.options.checkable.cascade},
                 };
             } else {
-                newOptions.checkable = {...defaultOptions.checkable};
+                if (this.options.checkable === false) {
+                    newOptions.checkable = false;
+                } else {
+                    newOptions.checkable = {...defaultOptions.checkable};
+                }
             }
 
             newOptions.selectable = this.options.selectable === false ? false : true;
