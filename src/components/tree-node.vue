@@ -44,7 +44,7 @@
             }
         },
         methods: {
-            clickCheckBox () { console.log(0)
+            clickCheckBox () {
                 let newStatus = this.nodeData.checkStatus === 2 ? 0: 2;
 
                 if (this.options.checkable.cascade.child && this.nodeData.children) {

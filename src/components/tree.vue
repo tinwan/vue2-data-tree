@@ -62,9 +62,6 @@
             this.optionSettings = newOptions;
             this.showData = [...this.treeData];
         },
-        updated () {
-            console.log(this.showData);
-        },
         methods: {
             nodeDataChange (item) {
                 let index;
