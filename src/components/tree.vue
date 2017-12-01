@@ -57,12 +57,10 @@
                     halfCheckable: this.options.checkable.halfCheckable === false ? false : true,
                     cascade: {...defaultOptions.checkable.cascade, ...this.options.checkable.cascade},
                 };
+            } else if (this.options.checkable === false) {
+                newOptions.checkable = false;
             } else {
-                if (this.options.checkable === false) {
-                    newOptions.checkable = false;
-                } else {
-                    newOptions.checkable = {...defaultOptions.checkable};
-                }
+                newOptions.checkable = {...defaultOptions.checkable};
             }
 
             newOptions.selectable = this.options.selectable === false ? false : true;
