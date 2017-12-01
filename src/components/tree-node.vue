@@ -99,6 +99,9 @@
         height: 20px;
         line-height: 20px;
         margin: 5px 0;
+        background-color: #FFFFFF;
+        position: relative;
+        z-index: 2;
     }
     .vue-data-tree .node-expand {
         display: inline-block;
@@ -157,5 +160,41 @@
         color:#ffffff;
         line-height: 11px;
         text-align: center;
+    }
+    .vue-data-tree ul {
+        position: relative;
+    }
+    .vue-data-tree ul:after {
+        content: " ";
+        position: absolute;
+        width: 0;
+        height: 100%;
+        border-left: 1px dashed #888888;
+        left: 5px;
+        top: -11px;
+    }
+    .vue-data-tree li {
+        position: relative;
+    }
+    .vue-data-tree li:before {
+        content: " ";
+        position: absolute;
+        width: 100px;
+        height: 0;
+        left: 5px;
+        top: 8px;
+        border-top: 1px dashed #888888;
+    }
+    .vue-data-tree > li:not(:last-child):after {
+        content: " ";
+        position: absolute;
+        width: 0;
+        height: 100%;
+        border-left: 1px dashed #888888;
+        left: 4px;
+        top: 11px;
+    }
+    .vue-data-tree li.data-tree-li.only-node:before {
+        border-top: none;
     }
 </style>
