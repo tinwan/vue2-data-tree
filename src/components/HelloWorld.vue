@@ -18,15 +18,18 @@ export default {
                 id: 1,
                 name: "test1",
                 checkStatus: 0,
+                hasChildren: true,
                 children: [
                     {
                         id: 3,
                         name: "test3",
+                        hasChildren: false,
                         checkStatus: 0,
                     },
                     {
                         id: 4,
                         name: "test4",
+                        hasChildren: false,
                         checkStatus: 0,
                     },
                 ]

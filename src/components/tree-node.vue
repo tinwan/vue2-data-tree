@@ -1,7 +1,11 @@
 <template>
     <div class="data-tree-node">
         <div class="data-tree-el">
-            <span :class="{'node-expand': true, 'close': !open}" @click="clickExpand"></span>
+            <span v-if="nodeData.hasChildren"
+                  :class="{'node-expand': true, 'close': !open}"
+                  @click="clickExpand"
+            >
+            </span>
             <span v-if="options.checkable"
                   :class="['node-check', ['', 'halfChecked', 'checked'][nodeData.checkStatus]]"
                   @click="clickCheckBox"></span>
