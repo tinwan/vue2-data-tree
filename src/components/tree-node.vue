@@ -14,7 +14,6 @@
                            :nodeData="item"
                            @nodeDataChange="nodeDataChange"
                            :level="level + 1"
-                           @nodeCheckChange="nodeCheckChange"
                 >
                 </tree-node>
             </li>
