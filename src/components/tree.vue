@@ -50,27 +50,51 @@
                 },
                 selectable: true
             };
-            let newOptions = {};
 
-            if (this.options.checkable) {
+            let {checkable, selectable, ...newOptions} = this.options;
+
+            if (checkable) {
                 newOptions.checkable = {
-                    halfCheckable: this.options.checkable.halfCheckable === false ? false : true,
-                    cascade: {...defaultOptions.checkable.cascade, ...this.options.checkable.cascade},
+                    halfCheckable: checkable.halfCheckable === false ? false : true,
+                    cascade: {...defaultOptions.checkable.cascade, ...checkable.cascade},
                 };
-            } else if (this.options.checkable === false) {
+            } else if (checkable === false) {
                 newOptions.checkable = false;
             } else {
                 newOptions.checkable = {...defaultOptions.checkable};
             }
 
-            newOptions.selectable = this.options.selectable === false ? false : true;
+            newOptions.selectable = selectable === false ? false : true;
 
             this.optionSettings = newOptions;
-            this.showData = [...this.treeData];
+
+            function setDefaultCheck (node, defaultChecked, checked) {
+                if (checked || defaultChecked.indexOf(node.id) > -1) {
+                    node.checkStatus = 2;
+                }
+
+                if (node.children && node.children.length) {
+                    node.children.forEach((child) => {
+                        setDefaultCheck(child, defaultChecked, checked || node.checkStatus);
+                    })
+                }
+            }
+
+            let newData = [...this.treeData];
+            if (newOptions.defaultChecked && newOptions.defaultChecked.length) {
+                newData.forEach((node) => {
+                    setDefaultCheck(node, newOptions.defaultChecked);
+                });
+            }
+
+            this.showData = newData;
+
             this.bus = new Vue();
+
             this.bus.$on("nodeSelected", node => {
                 this.$emit("nodeSelected", node);
             });
+
             this.bus.$on("nodeChecked", node => {
                 this.$emit("nodeChecked", node);
             });

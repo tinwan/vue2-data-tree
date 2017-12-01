@@ -49,6 +49,10 @@
             }
         },
         created () {
+            if (this.options.defaultSelected && this.options.defaultSelected === this.nodeData.id) {
+                this.selected = true;
+            }
+
             this.bus.$on("nodeSelected", node => {
                 if (this.nodeData.id !== node.id) {
                     this.selected = false;

@@ -17,6 +17,8 @@ export default {
   data() {
     return {
         options: {
+            defaultChecked: [3],
+            defaultSelected: 4
         },
         treeData: [
             {
