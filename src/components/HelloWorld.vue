@@ -4,60 +4,91 @@
           :treeData="treeData"
           @nodeSelected="nodeSelected"
           @nodeChecked="nodeChecked"
+          @expandEnd="expandEnd"
     >
     </tree>
   </div>
 </template>
 
 <script>
-    import Tree from './tree.vue'
-export default {
-  name: 'HelloWorld',
-  components: {Tree},
-  data() {
-    return {
-        options: {
-            defaultChecked: [3],
-            defaultSelected: 4
-        },
-        treeData: [
-            {
-                id: 1,
-                name: "test1",
-                checkStatus: 0,
-                hasChildren: true,
-                children: [
+    import Tree from "./tree.vue";
+
+    let indexedId = 10;
+
+    export default {
+        name: "HelloWorld",
+        components: {Tree},
+        data () {
+            return {
+                options: {
+                    defaultChecked: [3, 40],
+                    defaultSelected: 24,
+                    defaultExpandedLevel: 2,
+                    draggable: true,
+                    getData (node) {
+                        return new Promise(function (resolve, reject) {
+                            setTimeout(() => {
+                                resolve([
+                                    {
+                                        id: indexedId,
+                                        name: "test" + indexedId,
+                                        hasChildren: true,
+                                        checkStatus: 0
+                                    },
+                                    {
+                                        id: indexedId + 1,
+                                        name: "test" + (indexedId + 1),
+                                        hasChildren: true,
+                                        checkStatus: 0
+                                    }
+                                ]);
+                                indexedId += 2;
+                            });
+                        });
+                    }
+                },
+                treeData: [
                     {
-                        id: 3,
-                        name: "test3",
-                        hasChildren: false,
+                        id: 1,
+                        name: "test1",
                         checkStatus: 0,
+                        hasChildren: true,
+                        children: [
+                            {
+                                id: 3,
+                                name: "test3",
+                                hasChildren: false,
+                                checkStatus: 0
+                            },
+                            {
+                                id: 4,
+                                name: "test4",
+                                hasChildren: false,
+                                checkStatus: 0
+                            }
+                        ]
                     },
                     {
-                        id: 4,
-                        name: "test4",
-                        hasChildren: false,
-                        checkStatus: 0,
-                    },
+                        id: 2,
+                        name: "test2",
+                        hasChildren: true,
+                        checkStatus: 0
+                    }
                 ]
+            };
+        },
+        methods: {
+            nodeSelected (node) {
+                console.log("select node: " + node.id);
             },
-            {
-                id: 2,
-                name: "test2",
-                checkStatus: 0,
+            nodeChecked (node) {
+                console.log("check node: " + node.id);
+            },
+            expandEnd () {
+                console.log("nodeExpand");
             }
-        ]
+        }
     };
-  },
-    methods: {
-      nodeSelected (node) {
-          console.log("select node: " + node.id);
-      },
-      nodeChecked (node) {
-          console.log("check node: " + node.id);
-      }
-    }
-};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

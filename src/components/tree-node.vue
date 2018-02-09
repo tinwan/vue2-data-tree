@@ -1,18 +1,18 @@
 <template>
     <div :class="['data-tree-node', nodeData.hasChildren? '': 'leaf']">
         <div class="data-tree-el">
-            <span v-if="nodeData.hasChildren"
-                  :class="{'node-expand': true, 'close': !open}"
-                  @click="clickExpand"
-            >
-            </span>
-            <span v-if="options.checkable"
-                  :class="['node-check', ['', 'halfChecked', 'checked'][nodeData.checkStatus]]"
-                  @click="clickCheckBox"></span>
-            <span class="node-load"></span>
-            <span :class="['node-title', selected ? 'selected' : '']"
-                  @click="clickTitle"
-            >{{nodeData.name}}</span>
+            <div class="data-tree-el-info" :self="self" @mousedown="nodeMouseDown($event)" ref="nodeElInfo">
+                <span v-if="nodeData.hasChildren"
+                      :class="{'node-expand': true, 'close': !open}"
+                      @click="clickExpand"></span>
+                <span v-if="options.checkable"
+                      :class="['node-check', ['', 'halfChecked', 'checked'][nodeData.checkStatus]]"
+                      @click="clickCheckBox"></span>
+                <span class="node-load"></span>
+                <span :class="['node-title', selected ? 'selected' : '']"
+                      @click="clickTitle"
+                >{{nodeData.name}}</span>
+            </div>
         </div>
         <ul v-if="nodeData.children && nodeData.children.length" v-show="open">
             <li v-for="(item, index) in nodeData.children">
@@ -46,11 +46,16 @@
             return {
                 open: false,
                 selected: false
-            }
+            };
         },
         created () {
+            this.self = this;
             if (this.options.defaultSelected && this.options.defaultSelected === this.nodeData.id) {
                 this.selected = true;
+            }
+
+            if (this.options.defaultChecked && this.options.defaultChecked.indexOf(this.nodeData.id) > -1) {
+                this.nodeData.checkStatus = 2;
             }
 
             this.bus.$on("nodeSelected", node => {
@@ -58,10 +63,28 @@
                     this.selected = false;
                 }
             });
+
+            if (this.level < this.options.defaultExpandedLevel) {
+                this.open = true;
+                if (this.nodeData.hasChildren && !this.nodeData.children) {
+                    let expanding = this.bus.expandingInfo;
+                    expanding.start = true;
+                    expanding.list.push(this.nodeData.id);
+                    this.getNodeData().finally(() => {
+                        expanding.list.splice(expanding.list.indexOf(this.nodeData.id), 1);
+                        if (expanding.start && expanding.list.length === 0) {
+                            this.bus.$emit("expandEnd", "ttt", "rrrr");
+                        }
+                    });
+                }
+            }
+        },
+        beforeDestroy () {
+            this.self = null;
         },
         methods: {
             clickCheckBox () {
-                let newStatus = this.nodeData.checkStatus === 2 ? 0: 2, newNodeData;
+                let newStatus = this.nodeData.checkStatus === 2 ? 0 : 2, newNodeData;
 
                 if (this.options.checkable.cascade.child && this.nodeData.children) {
                     let newChildren = this.nodeData.children.map((item) => {
@@ -120,6 +143,26 @@
             },
             clickExpand () {
                 this.open = !this.open;
+
+                if (this.nodeData.hasChildren && !this.nodeData.children) {
+                    this.getNodeData();
+                }
+            },
+            getNodeData () {
+                return this.options.getData(this.nodeData).then((result) => {
+                    if (this.nodeData.checkStatus === 2) {
+                        result.forEach((node) => {
+                            node.checkStatus = 2;
+                        });
+                    }
+                    Vue.set(this.nodeData, "children", result);
+                });
+            },
+            nodeMouseDown (event) {
+                this.bus.moveNode = this.nodeData;
+                this.bus.cloneTarget = this.$refs.nodeElInfo;
+                let targetRect = this.$refs.nodeElInfo.getBoundingClientRect();
+                this.bus.moveStartPos = {x: event.clientX - targetRect.x, y: event.clientY - targetRect.y};
             }
         }
     };
@@ -240,6 +283,16 @@
         top: 8px;
         border-top: 1px dashed #888888;
     }
+    .vue-data-tree li:last-child:after {
+      content: " ";
+      position: absolute;
+      width: 0;
+      height: 100%;
+      border-left: 3px solid #FFFFFF;
+      left: 4px;
+      top: 10px;
+      z-index: 2;
+    }
     .vue-data-tree > li:not(:last-child):after {
         content: " ";
         position: absolute;
@@ -251,5 +304,13 @@
     }
     .vue-data-tree li.data-tree-li.only-node:before {
         border-top: none;
+    }
+    .vue-data-tree .data-tree-el .data-tree-el-info {
+        display: inline-block;
+    }
+    .vue-data-tree > .data-tree-el-info {
+        position: absolute;
+        z-index: 20;
+
     }
 </style>
