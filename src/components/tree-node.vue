@@ -1,7 +1,7 @@
 <template>
-    <div :class="['data-tree-node', nodeData.hasChildren? '': 'leaf']">
+    <div :class="['data-tree-node', nodeData.hasChildren? '': 'leaf']" ref="outerBox">
         <div class="data-tree-el">
-            <div class="data-tree-el-info" :self="self" @mousedown="nodeMouseDown($event)" ref="nodeElInfo">
+            <div class="data-tree-el-info" @mousedown="nodeMouseDown($event)" ref="nodeElInfo">
                 <span v-if="nodeData.hasChildren"
                       :class="{'node-expand': true, 'close': !open}"
                       @click="clickExpand"></span>
@@ -15,7 +15,7 @@
             </div>
         </div>
         <ul v-if="nodeData.children && nodeData.children.length" v-show="open">
-            <li v-for="(item, index) in nodeData.children">
+            <li v-for="(item, index) in nodeData.children" :key="'node_' + item.id">
                 <tree-node :options="options"
                            :nodeData="item"
                            :bus="bus"
@@ -64,7 +64,7 @@
                 }
             });
 
-            if (this.level < this.options.defaultExpandedLevel) {
+            if (this.level < this.options.defaultExpandedLevel && !this.bus.expandingInfo.expandEnd) {
                 this.open = true;
                 if (this.nodeData.hasChildren && !this.nodeData.children) {
                     let expanding = this.bus.expandingInfo;
@@ -73,32 +73,38 @@
                     this.getNodeData().finally(() => {
                         expanding.list.splice(expanding.list.indexOf(this.nodeData.id), 1);
                         if (expanding.start && expanding.list.length === 0) {
-                            this.bus.$emit("expandEnd", "ttt", "rrrr");
+                            this.bus.$emit("expandEnd");
+                            expanding.expandEnd = true;
                         }
                     });
                 }
             }
         },
+        mounted () {
+            this.$refs.outerBox.self = this;
+            this.$refs.nodeElInfo.self = this;
+            if (this.nodeData.checkStatus === 2) {
+                this.$emit("nodeDataChange", this.nodeData);
+            }
+        },
         beforeDestroy () {
-            this.self = null;
+            this.$refs.outerBox.self = null;
+            this.$refs.nodeElInfo.self = null;
         },
         methods: {
             clickCheckBox () {
-                let newStatus = this.nodeData.checkStatus === 2 ? 0 : 2, newNodeData;
+                let newStatus = this.nodeData.checkStatus === 2 ? 0 : 2;
 
                 if (this.options.checkable.cascade.child && this.nodeData.children) {
-                    let newChildren = this.nodeData.children.map((item) => {
-                        return {...item, checkStatus: newStatus};
+                    this.nodeData.children.forEach((item) => {
+                        Vue.set(item, "checkStatus", newStatus);
                     });
-
-                    newNodeData = {...this.nodeData, checkStatus: newStatus, children: newChildren};
-                } else {
-                    newNodeData = {...this.nodeData, checkStatus: newStatus};
                 }
+                Vue.set(this.nodeData, "checkStatus", newStatus);
 
-                this.$emit("nodeDataChange", newNodeData);
+                this.$emit("nodeDataChange", this.nodeData);
 
-                this.bus.$emit("nodeChecked", newNodeData);
+                this.bus.$emit("nodeChecked", this.nodeData);
             },
             clickTitle () {
                 if (!this.options.selectable) {
@@ -112,7 +118,7 @@
             nodeDataChange (item) {
                 let checkedNum = 0, checkStatus;
                 let newChildren = this.nodeData.children.map((child) => {
-                    if (child.id === item.id) {
+                    if (item && child.id === item.id) {
                         checkedNum += item.checkStatus || 0;
                         return item;
                     }
@@ -128,7 +134,7 @@
                     } else {
                         checkStatus = this.options.checkable.halfCheckable ? 1 : 0;
                     }
-
+                    Vue.set(this.nodeData, "checkStatus", checkStatus);
                     this.$emit("nodeDataChange", {
                         ...this.nodeData,
                         checkStatus: checkStatus,
@@ -159,10 +165,35 @@
                 });
             },
             nodeMouseDown (event) {
-                this.bus.moveNode = this.nodeData;
-                this.bus.cloneTarget = this.$refs.nodeElInfo;
+                if (!this.options.draggable) {
+                    return;
+                }
+                this.bus.dragInfo.moveNode = this.nodeData;
+                this.bus.dragInfo.cloneTarget = this.$refs.nodeElInfo;
                 let targetRect = this.$refs.nodeElInfo.getBoundingClientRect();
-                this.bus.moveStartPos = {x: event.clientX - targetRect.x, y: event.clientY - targetRect.y};
+                this.bus.dragInfo.moveStartPos = {x: event.clientX - targetRect.x, y: event.clientY - targetRect.y};
+                this.bus.dragInfo.mouseStartPos = {x: event.clientX, y: event.clientY};
+                this.$refs.outerBox.querySelectorAll(".data-tree-el-info").forEach(el => {
+                    el.classList.add("dragg-moving");
+                });
+            },
+            addChild (nodeData, index) {
+                if (index + 1 > this.nodeData.children.length) {
+                    this.nodeData.children.push(nodeData);
+                } else {
+                    this.nodeData.children.splice(index, 0, nodeData);
+                }
+                if (this.options.checkable && this.options.checkable.cascade.parent) {
+                    this.nodeDataChange(nodeData);
+                }
+            },
+            delChild (nodeData) {
+                this.nodeData.children = this.nodeData.children.filter(node => {
+                    return node.id !== nodeData.id;
+                });
+                if (this.options.checkable && this.options.checkable.cascade.parent) {
+                    this.nodeDataChange();
+                }
             }
         }
     };
@@ -271,6 +302,9 @@
         left: 5px;
         top: -11px;
     }
+    .vue-data-tree > ul:after {
+        border-left: none;
+    }
     .vue-data-tree li {
         position: relative;
     }
@@ -312,5 +346,13 @@
         position: absolute;
         z-index: 20;
 
+    }
+    .vue-data-tree .data-hint-pos {
+        background-color: #FFFFFF;
+        width: 150px;
+        height: 20px;
+        border: 1px dashed #cccccc;
+        position: relative;
+        z-index: 2;
     }
 </style>

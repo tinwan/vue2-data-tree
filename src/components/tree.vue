@@ -2,7 +2,8 @@
     <div class="vue-data-tree" @mousemove="dragMouseMove($event)" ref="dataTreeBox">
         <ul v-if="showData && showData.length" class="vue-data-tree" >
             <li v-for="(item, index) in showData"
-                :class="{'data-tree-li': true, 'first-node': index === 0, 'only-node': showData.length === 1}">
+                :class="{'data-tree-li': true, 'first-node': index === 0, 'only-node': showData.length === 1}"
+                :key="'node_' + item.id">
                 <tree-node :options="optionSettings"
                            :treeData="showData"
                            :nodeData="item"
@@ -79,6 +80,7 @@
                 start: false,
                 list: []
             };
+            this.bus.dragInfo = {};
             this.bus.$on("nodeSelected", node => {
                 this.$emit("nodeSelected", node);
             });
@@ -88,17 +90,85 @@
             this.bus.$on("expandEnd", () => {
                 this.$emit("expandEnd", this.showData);
             });
+            this.bus.getParentTreeNodeEl = el => {
+                let parentEl = el;
+                while (parentEl !== document.body && (!parentEl.className ||
+                    (parentEl.className.indexOf("vue-data-tree") === -1 &&
+                    parentEl.className.indexOf("data-tree-node") === -1))) {
+                    parentEl = parentEl.parentNode;
+                }
+                if (parentEl.className && parentEl.className.indexOf("data-tree-node") > -1) {
+                    return parentEl;
+                } else {
+                    return null;
+                }
+            };
+            this.bus.getElIndex = el => {
+                if (el.parentNode) {
+                    return [].indexOf.call(el.parentNode.children, el);
+                } else {
+                    return 0;
+                }
+            };
 
             // functions for dragging node
             this.bodyMouseUp = () => {
-                this.bus.moveNode = null;
-                this.bus.cloneTarget = null;
-                if (this.bus.cloneEl) {
-                    this.$refs.dataTreeBox.removeChild(this.bus.cloneEl);
-                    this.bus.cloneEl = null;
+                if (this.bus.dragInfo.moveNode && this.bus.dragInfo.hintPosEl && this.bus.dragInfo.hintPosEl.parentNode) {
+                    let hintPos = this.bus.dragInfo.hintPosEl;
+                    let index = this.bus.getElIndex(hintPos);
+                    let originEl = this.bus.getParentTreeNodeEl(this.bus.dragInfo.cloneTarget);
+                    let targetParentEl = this.bus.getParentTreeNodeEl(hintPos);
+                    let originParentEl = this.bus.getParentTreeNodeEl(originEl.parentNode);
+                    let moveNodeToTarget = () => {
+                        let nodeData = originEl.self.nodeData;
+                        if (originParentEl) {
+                            originParentEl.self.delChild(nodeData);
+                        } else {
+                            this.showData = this.showData.filter(node => {
+                                return node.id !== nodeData.id;
+                            });
+                        }
+
+                        if (targetParentEl) {
+                            targetParentEl.self.addChild(nodeData, index);
+                        } else {
+                            this.showData.splice(index, 0, nodeData);
+                        }
+                        // if original parent node has no child after dragging, set some parameters of it.
+                        if (originParentEl && originParentEl.self.nodeData.children.length === 0) {
+                            Vue.set(originParentEl.self.nodeData, "children", []);
+                            Vue.set(originParentEl.self.nodeData, "hasChildren", false);
+                            originParentEl.self.open = false;
+                        }
+
+                        this.$emit("dragEnd", originEl.self.nodeData, targetParentEl ? targetParentEl.self.nodeData : null, index);
+                    };
+                    if (targetParentEl && targetParentEl === originParentEl) {
+                        let idx = targetParentEl.self.nodeData.children.map(itm => itm.id).indexOf(originEl.self.nodeData.id);
+                        if (index > idx) {
+                            index = index - 1;
+                        }
+                    }
+                    moveNodeToTarget();
+                    hintPos.parentNode.removeChild(hintPos);
                 }
+                this.bus.dragInfo.moveNode = null;
+                this.bus.dragInfo.cloneTarget = null;
+                if (this.bus.dragInfo.cloneEl) {
+                    this.$refs.dataTreeBox.removeChild(this.bus.dragInfo.cloneEl);
+                    this.bus.dragInfo.cloneEl = null;
+                }
+                this.$refs.dataTreeBox.querySelectorAll(".data-tree-el-info").forEach(el => {
+                    el.classList.remove("dragg-moving");
+                });
             };
             document.body.addEventListener("mouseup", this.bodyMouseUp);
+        },
+        mounted () {
+            if (!this.bus.expandingInfo.start) {
+                this.bus.expandingInfo.expandEnd = true;
+                this.bus.$emit("expandEnd");
+            }
         },
         beforeDestroy () {
             this.bodyMouseUp();
@@ -117,28 +187,45 @@
                 Vue.set(this.showData, index, item);
             },
             dragMouseMove (event) {
-                if (!this.bus.moveNode) {
+                if (!this.bus.dragInfo.moveNode) {
                     return;
                 }
-                if (!this.bus.treeRect) {
-                    this.bus.treeRect = this.$refs.dataTreeBox.getBoundingClientRect();
+                let dragInfo = this.bus.dragInfo;
+                if (Math.abs(event.clientX - dragInfo.mouseStartPos.x) < 2 && Math.abs(event.clientY - dragInfo.mouseStartPos.y) < 2) {
+                    return;
                 }
-                if (!this.bus.cloneEl) {
-                    this.bus.cloneEl = this.bus.cloneTarget.cloneNode(true);
-                    this.$refs.dataTreeBox.appendChild(this.bus.cloneEl);
+                if (!dragInfo.treeRect) {
+                    dragInfo.treeRect = this.$refs.dataTreeBox.getBoundingClientRect();
                 }
-                this.bus.cloneEl.style.left = event.clientX - this.bus.treeRect.x - this.bus.moveStartPos.x + "px";
-                this.bus.cloneEl.style.top = event.clientY - this.bus.treeRect.y - this.bus.moveStartPos.y + "px";
+                if (!dragInfo.cloneEl) {
+                    dragInfo.cloneEl = dragInfo.cloneTarget.cloneNode(true);
+                    this.$refs.dataTreeBox.appendChild(dragInfo.cloneEl);
+                }
+                if (!dragInfo.hintPosEl) {
+                    let frag = document.createElement("li");
+                    frag.innerHTML = "<div class='data-tree-node'><div class='data-hint-pos'></div></div>";
+                    dragInfo.hintPosEl = frag;
+                }
+                dragInfo.cloneEl.style.left = event.clientX - dragInfo.treeRect.x - dragInfo.moveStartPos.x + "px";
+                dragInfo.cloneEl.style.top = event.clientY - dragInfo.treeRect.y - dragInfo.moveStartPos.y + "px";
 
                 let nodeList = this.$refs.dataTreeBox.querySelectorAll(".data-tree-el-info");
                 nodeList.forEach((nodeEl) => {
+                    if (nodeEl === dragInfo.cloneEl || nodeEl === dragInfo.cloneTarget || nodeEl.classList.contains("dragg-moving")) {
+                        return;
+                    }
                     let rect = nodeEl.getBoundingClientRect();
                     if (event.clientX - rect.x > 0 && event.clientX - rect.x < rect.width &&
                         event.clientY - rect.y > 0 && event.clientY - rect.y < rect.height) {
-
+                        let treeNodeEl = this.bus.getParentTreeNodeEl(nodeEl);
+                        let hintPos = dragInfo.hintPosEl;
+                        if (event.clientY - rect.y < rect.height / 2) {
+                            treeNodeEl.parentNode.parentNode.insertBefore(hintPos, treeNodeEl.parentNode);
+                        } else {
+                            treeNodeEl.parentNode.parentNode.insertBefore(hintPos, treeNodeEl.parentNode.nextSibling);
+                        }
                     }
                 });
-                console.log(event);
             }
         }
     };

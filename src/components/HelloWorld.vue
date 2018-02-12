@@ -5,6 +5,7 @@
           @nodeSelected="nodeSelected"
           @nodeChecked="nodeChecked"
           @expandEnd="expandEnd"
+          @dragEnd="dragEnd"
     >
     </tree>
   </div>
@@ -21,7 +22,7 @@
         data () {
             return {
                 options: {
-                    defaultChecked: [3, 40],
+                    defaultChecked: [3, 40, 13],
                     defaultSelected: 24,
                     defaultExpandedLevel: 2,
                     draggable: true,
@@ -86,6 +87,9 @@
             },
             expandEnd () {
                 console.log("nodeExpand");
+            },
+            dragEnd (currentNode, parentNode, index) {
+                console.log("drag end " + currentNode.id + " " + parentNode + " " + index);
             }
         }
     };
