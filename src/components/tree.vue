@@ -170,6 +170,9 @@
                 this.bus.$emit("expandEnd");
             }
         },
+        updated() {
+            console.log("tree updated");
+        },
         beforeDestroy () {
             this.bodyMouseUp();
             document.body.removeEventListener("mouseup", this.bodyMouseUp);
@@ -186,6 +189,9 @@
 
                 Vue.set(this.showData, index, item);
                 this.$emit("nodeDataChange", this.showData);
+                Vue.nextTick(() => {
+                    console.log("Tree nodeDataChange nextTick");
+                });
             },
             dragMouseMove (event) {
                 if (!this.bus.dragInfo.moveNode) {
