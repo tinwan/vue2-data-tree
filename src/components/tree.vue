@@ -185,6 +185,7 @@
                 });
 
                 Vue.set(this.showData, index, item);
+                this.$emit("nodeDataChange", this.showData);
             },
             dragMouseMove (event) {
                 if (!this.bus.dragInfo.moveNode) {

@@ -6,6 +6,7 @@
           @nodeChecked="nodeChecked"
           @expandEnd="expandEnd"
           @dragEnd="dragEnd"
+          @nodeDataChange="nodeDataChange"
     >
     </tree>
   </div>
@@ -90,6 +91,9 @@
             },
             dragEnd (currentNode, parentNode, index) {
                 console.log("drag end " + currentNode.id + " " + parentNode + " " + index);
+            },
+            nodeDataChange (treeData) {
+                console.log("nodeDataChange", treeData);
             }
         }
     };

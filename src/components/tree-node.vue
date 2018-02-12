@@ -126,7 +126,7 @@
                     return child;
                 });
 
-                if (this.options.checkable.cascade.parent) {
+                if (this.options.checkable && this.options.checkable.cascade.parent) {
                     if (checkedNum === 0) {
                         checkStatus = 0;
                     } else if (checkedNum === 2 * this.nodeData.children.length) {
