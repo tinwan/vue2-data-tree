@@ -92,6 +92,7 @@
             this.bus.dragInfo = {};
             this.bus.$on("nodeSelected", node => {
                 this.$emit("nodeSelected", node);
+                this.selectedNode = node;
             });
             this.bus.$on("nodeChecked", node => {
                 this.$emit("nodeChecked", node);
@@ -236,6 +237,38 @@
                         }
                     }
                 });
+            },
+            getCheckedNodes () {
+                let checkedList = [],
+                    loopGetChecked = list => {
+                        if (!list || list.length === 0) {
+                            return;
+                        }
+                        list.forEach(item => {
+                            if (item.checkStatus === 2) {
+                                checkedList.push(item);
+                            }
+                            if (item.children) {
+                                loopGetChecked(item.children);
+                            }
+                        });
+                    };
+                return checkedList;
+            },
+            getSelectedNode () {
+                return this.selectedNode;
+            },
+            delCurrentNode () {
+                if (!this.selectedNode) {
+                    return;
+                }
+                this.bus.$emit("deleteNode", this.selectedNode);
+            },
+            refreshCurrentNode () {
+                if (!this.selectedNode) {
+                    return;
+                }
+                this.bus.$emit("refreshNode", this.selectedNode);
             }
         }
     };

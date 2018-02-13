@@ -69,6 +69,7 @@
             this.self = this;
             if (this.options.defaultSelected && this.options.defaultSelected === this.nodeData.id) {
                 this.selected = true;
+                this.bus.$emit("nodeSelected", this.nodeData);
             }
 
             if (this.options.defaultChecked && this.options.defaultChecked.indexOf(this.nodeData.id) > -1) {
@@ -78,6 +79,19 @@
             this.bus.$on("nodeSelected", node => {
                 if (this.nodeData.id !== node.id) {
                     this.selected = false;
+                }
+            });
+            this.bus.$on("deleteNode", node => {
+                if (this.nodeData.children && this.nodeData.children.length) {
+                    this.delChild(node);
+                }
+            });
+            this.bus.$on("refreshNode", node => {
+                if (this.nodeData.children && this.nodeData.children.length) {
+                    let ids = this.nodeData.children.map(item => item.id);
+                    if (ids.indexOf(node.id) > -1) {
+                        this.refreshChild();
+                    }
                 }
             });
 
@@ -217,6 +231,27 @@
                 });
                 if (this.options.checkable && this.options.checkable.cascade.parent) {
                     this.nodeDataChange();
+                }
+            },
+            refreshChild () {
+                if (this.nodeData.hasChildren) {
+                    this.options.getData(this.nodeData).then(list => {
+                        if (this.nodeData.children && this.nodeData.children.length) {
+                            let checkStatusMap = {};
+                            this.nodeData.children.forEach(item => {
+                                checkStatusMap[item.id] = item.checkStatus;
+                            });
+                            let newList = list.map(node => {
+                                return {
+                                    ...node,
+                                    checkStatus: checkStatusMap[node.id] || 0
+                                };
+                            });
+                            Vue.set(this.nodeData, "children", newList);
+                        } else {
+                            Vue.set(this.nodeData, "children", list);
+                        }
+                    });
                 }
             }
         }
