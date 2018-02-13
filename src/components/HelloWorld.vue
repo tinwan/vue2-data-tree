@@ -1,5 +1,6 @@
 <template>
   <div class="hello">
+      <button @click="clickBtn">改变checkList</button>
     <tree :options="options"
           :treeData="treeData"
           @nodeSelected="nodeSelected"
@@ -13,7 +14,6 @@
 </template>
 
 <script>
-    import Vue from "vue";
     import Tree from "./tree.vue";
 
     let indexedId = 10;
@@ -83,33 +83,36 @@
         methods: {
             nodeSelected (node) {
                 console.log("select node: " + node.id);
-                Vue.nextTick(() => {
+                this.$nextTick(() => {
                     console.log("HelloWord nodeSelected nextTick");
                 });
             },
             nodeChecked (node) {
                 console.log("check node: " + node.id);
-                Vue.nextTick(() => {
+                this.$nextTick(() => {
                     console.log("HelloWord nodeChecked nextTick");
                 });
             },
             expandEnd () {
                 console.log("nodeExpand");
-                Vue.nextTick(() => {
+                this.$nextTick(() => {
                     console.log("HelloWord expandEnd nextTick");
                 });
             },
             dragEnd (currentNode, parentNode, index) {
                 console.log("drag end " + currentNode.id + " " + parentNode + " " + index);
-                Vue.nextTick(() => {
+                this.$nextTick(() => {
                     console.log("HelloWord dragEnd nextTick");
                 });
             },
             nodeDataChange (treeData) {
                 console.log("nodeDataChange", treeData);
-                Vue.nextTick(() => {
+                this.$nextTick(() => {
                     console.log("HelloWord nodeDataChange nextTick");
                 });
+            },
+            clickBtn () {
+                this.options.defaultChecked = [];
             }
         }
     };

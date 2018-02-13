@@ -48,6 +48,23 @@
                 selected: false
             };
         },
+        watch: {
+            options: {
+                handler (newOptions, oldOptions) {
+                    if (newOptions.checkable && oldOptions.checkable) {
+                        let newCheckList = newOptions.defaultChecked || [];
+                        if ((newCheckList.indexOf(this.nodeData.id) > -1 && !this.nodeData.checkStatus) ||
+                            (newCheckList.indexOf(this.nodeData.id) === -1 && this.nodeData.checkStatus === 2)) {
+                            let checkStatus = newCheckList.indexOf(this.nodeData.id) > -1 ? 2 : 0;
+                            Vue.set(this.nodeData, "checkStatus", checkStatus);
+                            this.loopChildrenCheck(this.nodeData.children, checkStatus);
+                            this.$emit("nodeDataChange", this.nodeData);
+                        }
+                    }
+                },
+                deep: true
+            }
+        },
         created () {
             this.self = this;
             if (this.options.defaultSelected && this.options.defaultSelected === this.nodeData.id) {
@@ -96,15 +113,22 @@
                 let newStatus = this.nodeData.checkStatus === 2 ? 0 : 2;
 
                 if (this.options.checkable.cascade.child && this.nodeData.children) {
-                    this.nodeData.children.forEach((item) => {
-                        Vue.set(item, "checkStatus", newStatus);
-                    });
+                    this.loopChildrenCheck(this.nodeData.children, newStatus);
                 }
                 Vue.set(this.nodeData, "checkStatus", newStatus);
 
                 this.$emit("nodeDataChange", this.nodeData);
 
                 this.bus.$emit("nodeChecked", this.nodeData);
+            },
+            loopChildrenCheck (list, status) {
+                if (!list || list.length === 0) {
+                    return;
+                }
+                list.forEach((item) => {
+                    Vue.set(item, "checkStatus", status);
+                    this.loopChildrenCheck(item.children, status);
+                });
             },
             clickTitle () {
                 if (!this.options.selectable) {
