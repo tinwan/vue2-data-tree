@@ -253,6 +253,7 @@
                             }
                         });
                     };
+                loopGetChecked(this.showData);
                 return checkedList;
             },
             getSelectedNode () {
@@ -287,7 +288,8 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
-        font-size: 14px
+        font-size: 14px;
+        box-sizing: border-box;
     }
     .vue-data-tree ul,
     .vue-data-tree li {
