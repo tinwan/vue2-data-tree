@@ -75,17 +75,19 @@
             if (this.options.defaultChecked && this.options.defaultChecked.indexOf(this.nodeData.id) > -1) {
                 this.nodeData.checkStatus = 2;
             }
-
+            // Set selected status
             this.bus.$on("nodeSelected", node => {
                 if (this.nodeData.id !== node.id) {
                     this.selected = false;
                 }
             });
+            // Delete node from parent
             this.bus.$on("deleteNode", node => {
                 if (this.nodeData.children && this.nodeData.children.length) {
                     this.delChild(node);
                 }
             });
+            // Fresh node from parent
             this.bus.$on("refreshNode", node => {
                 if (this.nodeData.children && this.nodeData.children.length) {
                     let ids = this.nodeData.children.map(item => item.id);
@@ -95,6 +97,7 @@
                 }
             });
 
+            // Expand this tree to default level
             if (this.level < this.options.defaultExpandedLevel && !this.bus.expandingInfo.expandEnd) {
                 this.open = true;
                 if (this.nodeData.hasChildren && !this.nodeData.children) {
