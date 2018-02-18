@@ -6,6 +6,8 @@
 
 # vue2-data-tree
 
+```QQ Group: 596446187``` <br/>
+
 > A Vue.js project
 
 ## Build Setup
