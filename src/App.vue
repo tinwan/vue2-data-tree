@@ -1,7 +1,6 @@
 <template>
   <div id="app">
       <div class="hello">
-          <button @click="clickBtn">改变checkList</button>
           <tree :options="options"
                 :treeData="treeData"
                 @nodeSelected="nodeSelected"
@@ -112,9 +111,6 @@
                 this.$nextTick(() => {
                     console.log("HelloWord nodeDataChange nextTick");
                 });
-            },
-            clickBtn () {
-                this.options.defaultChecked = [];
             }
         }
     };

@@ -282,8 +282,8 @@
     }
     .vue-data-tree .node-expand {
         display: inline-block;
-        width: 11px;
-        height: 11px;
+        width: 13px;
+        height: 13px;
         border: 1px solid #888888;
         border-radius: 2px;
         position: relative;
@@ -310,8 +310,8 @@
     }
     .vue-data-tree .node-check {
         display: inline-block;
-        width: 11px;
-        height: 11px;
+        width: 13px;
+        height: 13px;
         border: 1px solid #888888;
         border-radius: 2px;
         line-height: 11px;
