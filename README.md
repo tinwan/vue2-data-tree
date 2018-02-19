@@ -13,17 +13,33 @@
 ## Build Setup
 
 ``` bash
-# install dependencies
-npm install
+## Install
+npm install vue2-data-tree --save
 
-# serve with hot reload at localhost:8080
-npm run dev
+## Usage
 
-# build for production with minification
-npm run build
+```js
+import Vue from 'vue'
+import Vue2DataTree from 'vue-data-tree'
 
-# build for production and view the bundle analyzer report
-npm run build --report
+new Vue({
+  el: '#app',
+  // ...
+  data(){
+    return {
+      target: {msg: 'Hello Vuejs!'}
+    }
+  },
+  components: { Vue2DataTree }
+})
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+```html
+<div id="app">
+  <vue2-data-tree :value="target"></vue2-data-tree>
+</div>
+```
+
+## LICENSE
+
+The MIT License
