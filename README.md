@@ -148,3 +148,6 @@ new Vue({
 ## LICENSE
 
 The MIT License
+
+### 如果你觉得这个项目帮助到了你，你可以帮作者买一杯果汁表示鼓励
+<img src="https://github.com/tinwan/vue2-data-tree/tree/master/src/assets/myWechat.png" width=256 height=256 />
