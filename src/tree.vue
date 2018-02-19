@@ -20,7 +20,7 @@
 <script>
     /**
      * checkable = {
-     *      hafCheckable: true,
+     *      halfCheckable: true,
      *      cascade: {
      *          parent: true,
      *          child: true
