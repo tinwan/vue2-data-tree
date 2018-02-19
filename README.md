@@ -19,21 +19,117 @@ npm install vue2-data-tree --save
 import Vue from 'vue'
 import Vue2DataTree from 'vue2-data-tree'
 
+let indexedId = 10;
+
 new Vue({
   el: '#app',
   // ...
-  data(){
-    return {
-      target: {msg: 'Hello Vuejs!'}
-    }
+  components: {Vue2DataTree},
+  data () {
+      return {
+          options: {
+              defaultChecked: [3, 40, 13],              // default list of checked node-id
+              defaultSelected: 24,                      // default selected node-id
+              defaultExpandedLevel: 2,                  // default expanded level
+              draggable: true,                          // support drag node or not
+              getData (node) {                          // getData function
+                  return new Promise(function (resolve, reject) {
+                      setTimeout(() => {
+                          resolve([
+                              {
+                                  id: indexedId,
+                                  name: "test" + indexedId,
+                                  hasChildren: true,
+                                  checkStatus: 0
+                              },
+                              {
+                                  id: indexedId + 1,
+                                  name: "test" + (indexedId + 1),
+                                  hasChildren: true,
+                                  checkStatus: 0
+                              }
+                          ]);
+                          indexedId += 2;
+                      });
+                  });
+              }
+          },
+          treeData: [
+              {
+                  id: 1,
+                  name: "test1",
+                  checkStatus: 0,
+                  hasChildren: true,
+                  children: [
+                      {
+                          id: 3,
+                          name: "test3",
+                          hasChildren: false,
+                          checkStatus: 0
+                      },
+                      {
+                          id: 4,
+                          name: "test4",
+                          hasChildren: false,
+                          checkStatus: 0
+                      }
+                  ]
+              },
+              {
+                  id: 2,
+                  name: "test2",
+                  hasChildren: true,
+                  checkStatus: 0
+              }
+          ]
+      };
   },
-  components: { Vue2DataTree }
+  methods: {
+      nodeSelected (node) {
+          console.log("select node: " + node.id);
+          this.$nextTick(() => {
+              console.log("HelloWord nodeSelected nextTick");
+          });
+      },
+      nodeChecked (node) {
+          console.log("check node: " + node.id);
+          this.$nextTick(() => {
+              console.log("HelloWord nodeChecked nextTick");
+          });
+      },
+      expandEnd () {
+          console.log("nodeExpand");
+          this.$nextTick(() => {
+              console.log("HelloWord expandEnd nextTick");
+          });
+      },
+      dragEnd (currentNode, parentNode, index) {
+          console.log("drag end " + currentNode.id + " " + parentNode + " " + index);
+          this.$nextTick(() => {
+              console.log("HelloWord dragEnd nextTick");
+          });
+      },
+      nodeDataChange (treeData) {
+          console.log("nodeDataChange", treeData);
+          this.$nextTick(() => {
+              console.log("HelloWord nodeDataChange nextTick");
+          });
+      }
+  }
 })
 ```
 
 ```html
 <div id="app">
-  <vue2-data-tree :value="target"></vue2-data-tree>
+  <tree :options="options"
+                  :treeData="treeData"
+                  @nodeSelected="nodeSelected"
+                  @nodeChecked="nodeChecked"
+                  @expandEnd="expandEnd"
+                  @dragEnd="dragEnd"
+                  @nodeDataChange="nodeDataChange"
+  >
+  </tree>
 </div>
 ```
 
