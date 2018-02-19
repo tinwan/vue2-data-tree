@@ -17,7 +17,7 @@ npm install vue2-data-tree --save
 
 ```js
 import Vue from 'vue'
-import Vue2DataTree from 'vue-data-tree'
+import Vue2DataTree from 'vue2-data-tree'
 
 new Vue({
   el: '#app',
