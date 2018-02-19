@@ -4,7 +4,7 @@
   "description": "A Vue.js project",
   "author": "tinwan <67046862@qq.com>",
   "private": false,
-  "keywords": "vue,vue2,tree,lazy,draggable",
+  "keywords": ["vue", "vue2", "tree", "lazy", "draggable"],
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
