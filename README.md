@@ -28,12 +28,17 @@ new Vue({
   data () {
       return {
           options: {
-              defaultChecked: [3, 40, 13],   // default list of checked node-id, type of every item must be same to the node-id's type
-              defaultSelected: 24,  // default selected node-id, type of this config must be same to the node-id's type
+              defaultChecked: [3, 40, 13],   // default list of checked node-id, type of
+                                             // every item must be same to the node-id's type
+              defaultSelected: 24,  // default selected node-id, type of this
+                                    // config must be same to the node-id's type
               defaultExpandedLevel: 2, // default expanded level, must be a number
-              draggable: true, // support drag node or not, must be a boolean, default value is false
-              checkable: { // support check node or not, set the value to be false will disable check, default value is like this
-                  halfCheckable: true, // support half-check or not, must be a boolean, default value is false
+              draggable: true, // support drag node or not,
+                               // must be a boolean, default value is false
+              checkable: { // support check node or not, set the value to
+                           //false will disable check; default value is like this
+                  halfCheckable: true, // support half-check or not, must
+                                       // be a boolean, default value is false
                   cascade: {
                       parent: true, // cascade parent or not
                       child: true // cascade child or not
