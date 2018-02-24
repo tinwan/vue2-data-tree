@@ -15,6 +15,20 @@ npm install vue2-data-tree --save
 
 ## Usage
 
+```html
+<div id="app">
+  <tree :options="options"
+                  :treeData="treeData"
+                  @nodeSelected="nodeSelected"
+                  @nodeChecked="nodeChecked"
+                  @expandEnd="expandEnd"
+                  @dragEnd="dragEnd"
+                  @nodeDataChange="nodeDataChange"
+  >
+  </tree>
+</div>
+```
+
 ```js
 import Vue from 'vue'
 import Vue2DataTree from 'vue2-data-tree'
@@ -131,19 +145,6 @@ new Vue({
 })
 ```
 
-```html
-<div id="app">
-  <tree :options="options"
-                  :treeData="treeData"
-                  @nodeSelected="nodeSelected"
-                  @nodeChecked="nodeChecked"
-                  @expandEnd="expandEnd"
-                  @dragEnd="dragEnd"
-                  @nodeDataChange="nodeDataChange"
-  >
-  </tree>
-</div>
-```
 
 ## LICENSE
 
