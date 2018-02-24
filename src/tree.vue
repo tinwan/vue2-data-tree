@@ -77,7 +77,7 @@
                 newOptions.checkable = {...defaultOptions.checkable};
             }
 
-            newOptions.selectable = selectable !== false ?;
+            newOptions.selectable = selectable !== false;
 
             this.optionSettings = newOptions;
 
