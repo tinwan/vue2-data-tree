@@ -2,6 +2,7 @@
 node_modules/
 build/
 config/
+demo/
 /dist/
 npm-debug.log*
 yarn-debug.log*
