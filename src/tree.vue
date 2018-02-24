@@ -68,7 +68,7 @@
 
             if (checkable) {
                 newOptions.checkable = {
-                    halfCheckable: checkable.halfCheckable === false ? false : true,
+                    halfCheckable: checkable.halfCheckable !== false,
                     cascade: {...defaultOptions.checkable.cascade, ...checkable.cascade}
                 };
             } else if (checkable === false) {
@@ -77,7 +77,7 @@
                 newOptions.checkable = {...defaultOptions.checkable};
             }
 
-            newOptions.selectable = selectable === false ? false : true;
+            newOptions.selectable = selectable !== false ?;
 
             this.optionSettings = newOptions;
 
