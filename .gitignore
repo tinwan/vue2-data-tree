@@ -1,7 +1,6 @@
 .DS_Store
 node_modules/
 build/
-config/
 demo/
 /dist/
 npm-debug.log*
