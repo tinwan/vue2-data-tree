@@ -9,7 +9,7 @@
 ```QQ Group: 596446187``` <br/>
 
 ## Demo
-<img src="https://github.com/tinwan/vue2-data-tree/blob/master/demoImage.gif" width=495 height=414 />
+<img src="https://raw.githubusercontent.com/tinwan/vue2-data-tree/master/demoImage.gif" width=495 height=414 />
 
 ## Install
 npm install vue2-data-tree --save
@@ -152,4 +152,4 @@ new Vue({
 The MIT License
 
 ### 如果你觉得这个项目帮助到了你，你可以帮作者买一杯果汁表示鼓励
-<img src="https://github.com/tinwan/vue2-data-tree/blob/master/myWechat.png" width=256 height=256 />
+<img src="https://raw.githubusercontent.com/tinwan/vue2-data-tree/master/myWechat.png" width=256 height=256 />
