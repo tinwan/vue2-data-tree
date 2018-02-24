@@ -18,13 +18,9 @@ npm install vue2-data-tree --save
 
 ```html
 <div id="app">
-  <tree :options="options"
-                  :treeData="treeData"
-                  @nodeSelected="nodeSelected"
-                  @nodeChecked="nodeChecked"
-                  @expandEnd="expandEnd"
-                  @dragEnd="dragEnd"
-                  @nodeDataChange="nodeDataChange"
+  <tree :options="options" :treeData="treeData" @nodeSelected="nodeSelected"
+      @nodeChecked="nodeChecked" @expandEnd="expandEnd" @dragEnd="dragEnd"
+      @nodeDataChange="nodeDataChange"
   >
   </tree>
 </div>
