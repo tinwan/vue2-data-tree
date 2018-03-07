@@ -9,7 +9,7 @@
 ```QQ Group: 596446187``` <br/>
 
 ## Demo
-<img src="https://raw.githubusercontent.com/tinwan/vue2-data-tree/master/demoImage.gif" width=495 height=414 />
+<img src="https://raw.githubusercontent.com/tinwan/vue2-data-tree/master/demoImage.gif" width=337 height=385 />
 
 ## Install
 npm install vue2-data-tree --save
