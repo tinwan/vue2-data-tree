@@ -1,6 +1,6 @@
 {
   "name": "vue2-data-tree",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A Vue.js project",
   "author": "tinwan <67046862@qq.com>",
   "private": false,
@@ -9,7 +9,8 @@
     "vue2",
     "tree",
     "lazy",
-    "draggable"
+    "draggable",
+    "drag"
   ],
   "dependencies": {
     "vue": "^2.5.2"

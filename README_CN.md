@@ -4,23 +4,26 @@
 [![GitHub forks](https://img.shields.io/github/forks/tinwan/vue2-data-tree.svg?style=social&label=Fork&style=for-the-badge)](https://github.com/tinwan/vue2-data-tree/network)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
-# vue2-data-tree （[中文文档](https://github.com/tinwan/vue2-data-tree/blob/master/README_CN.md)）
+# vue2-data-tree （[English Document](https://github.com/tinwan/vue2-data-tree/blob/master/README.md)）
 
-```QQ Group: 596446187``` <br/>
+```QQ群: 596446187``` <br/>
 
 ## Demo
 <img src="https://raw.githubusercontent.com/tinwan/vue2-data-tree/master/demoImage.gif" width=337 height=385 />
 
-## Install
+## 安装
 npm install vue2-data-tree --save
 
-## Usage
+## 使用
 
 ```html
 <div id="app">
-  <vue2-data-tree :options="options" :treeData="treeData" @nodeSelected="nodeSelected"
-      @nodeChecked="nodeChecked" @expandEnd="expandEnd" @dragEnd="dragEnd"
-      @nodeDataChange="nodeDataChange"
+  <vue2-data-tree :options="options" :treeData="treeData"
+      @nodeSelected="nodeSelected"          // 选中节点的事件
+      @nodeChecked="nodeChecked"            // 勾选节点的事件
+      @expandEnd="expandEnd"            // 初始化后展开到默认层级之后的事件
+      @dragEnd="dragEnd"                // 拖拽结束后的事件
+      @nodeDataChange="nodeDataChange"  // 节点数据改变后触发的事件
   >
   </vue2-data-tree>
 </div>
@@ -39,20 +42,17 @@ new Vue({
   data () {
       return {
           options: {
-              defaultChecked: [3, 40, 13],   // default list of checked node-id, type of
-                                             // every item must be same to the node-id's type
-              defaultSelected: 24,  // default selected node-id, type of this
-                                    // config must be same to the node-id's type
-              defaultExpandedLevel: 2, // default expanded level, must be a number
-              draggable: true, // support drag node or not,
-                               // must be a boolean, default value is false
-              checkable: { // support check node or not, set the value to
-                           // false will disable check; default value is like this
-                  halfCheckable: true, // support half-check or not, must
-                                       // be a boolean, default value is false
+              defaultChecked: [3, 40, 13],  // 组件初始化时默认勾选的节点id列表，id类型必须与节点id一致
+                                            // 这一项如果不设置，初始化时默认不勾选任何节点
+              defaultSelected: 24,  // 组件初始化时默认选中的节点id，类型必须与节点id一致
+                                    // 这一项如果不设置，初始化时默认选中任何节点
+              defaultExpandedLevel: 2, // 组件初始化时展开的层级，默认值为0
+              draggable: true, // 是否可拖拽节点，默认值是false
+              checkable: { // 是否可勾选，默认值如左侧对象这样；如果这一项设为false，将不展示勾选框
+                  halfCheckable: true, // 是否支持半勾选，默认值是false
                   cascade: {
-                      parent: true, // cascade parent or not
-                      child: true // cascade child or not
+                      parent: true, // 勾选时是否级联上一级节点
+                      child: true // 勾选时是否级联下一级节点
                   }
                }
               getData (node) { // getData function
@@ -66,10 +66,10 @@ new Vue({
                                   checkStatus: 0
                               },
                               {
-                                  id: indexedId + 1,
-                                  name: "treeNode" + (indexedId + 1),
-                                  hasChildren: true,
-                                  checkStatus: 0
+                                  id: indexedId + 1,  // id是必填属性
+                                  name: "treeNode" + (indexedId + 1),  // name是必填属性
+                                  hasChildren: true,    //可选属性，是否有子节点，默认值是false
+                                  checkStatus: 0     //可选属性，是否勾选，默认值是0
                               }
                           ]);
                           indexedId += 2;
