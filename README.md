@@ -47,7 +47,7 @@ new Vue({
               draggable: true, // support drag node or not,
                                // must be a boolean, default value is false
               checkable: { // support check node or not, set the value to
-                           //false will disable check; default value is like this
+                           // false will disable check; default value is like this
                   halfCheckable: true, // support half-check or not, must
                                        // be a boolean, default value is false
                   cascade: {
@@ -61,13 +61,13 @@ new Vue({
                           resolve([
                               {
                                   id: indexedId,
-                                  name: "test" + indexedId,
+                                  name: "treeNode" + indexedId,
                                   hasChildren: true,
                                   checkStatus: 0
                               },
                               {
                                   id: indexedId + 1,
-                                  name: "test" + (indexedId + 1),
+                                  name: "treeNode" + (indexedId + 1),
                                   hasChildren: true,
                                   checkStatus: 0
                               }
@@ -80,19 +80,19 @@ new Vue({
           treeData: [
               {
                   id: 1,
-                  name: "test1",
+                  name: "treeNode1",
                   checkStatus: 0,
                   hasChildren: true,
                   children: [
                       {
                           id: 3,
-                          name: "test3",
+                          name: "treeNode3",
                           hasChildren: false,
                           checkStatus: 0
                       },
                       {
                           id: 4,
-                          name: "test4",
+                          name: "treeNode4",
                           hasChildren: false,
                           checkStatus: 0
                       }
@@ -100,7 +100,7 @@ new Vue({
               },
               {
                   id: 2,
-                  name: "test2",
+                  name: "treeNode2",
                   hasChildren: true,
                   checkStatus: 0
               }
@@ -110,33 +110,18 @@ new Vue({
   methods: {
       nodeSelected (node) {
           console.log("select node: " + node.id);
-          this.$nextTick(() => {
-              console.log("HelloWord nodeSelected nextTick");
-          });
       },
       nodeChecked (node) {
           console.log("check node: " + node.id);
-          this.$nextTick(() => {
-              console.log("HelloWord nodeChecked nextTick");
-          });
       },
       expandEnd () {
           console.log("nodeExpand");
-          this.$nextTick(() => {
-              console.log("HelloWord expandEnd nextTick");
-          });
       },
       dragEnd (currentNode, parentNode, index) {
           console.log("drag end " + currentNode.id + " " + parentNode + " " + index);
-          this.$nextTick(() => {
-              console.log("HelloWord dragEnd nextTick");
-          });
       },
       nodeDataChange (treeData) {
           console.log("nodeDataChange", treeData);
-          this.$nextTick(() => {
-              console.log("HelloWord nodeDataChange nextTick");
-          });
       }
   }
 })

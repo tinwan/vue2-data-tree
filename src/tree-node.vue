@@ -29,8 +29,6 @@
 </template>
 
 <script>
-    import Vue from "vue";
-
     const TreeNode = {
         name: "TreeNode",
         props: {
@@ -56,7 +54,7 @@
                         if ((newCheckList.indexOf(this.nodeData.id) > -1 && !this.nodeData.checkStatus) ||
                             (newCheckList.indexOf(this.nodeData.id) === -1 && this.nodeData.checkStatus === 2)) {
                             let checkStatus = newCheckList.indexOf(this.nodeData.id) > -1 ? 2 : 0;
-                            Vue.set(this.nodeData, "checkStatus", checkStatus);
+                            this.$set(this.nodeData, "checkStatus", checkStatus);
                             this.loopChildrenCheck(this.nodeData.children, checkStatus);
                             this.$emit("nodeDataChange", this.nodeData);
                         }
@@ -132,7 +130,7 @@
                 if (this.options.checkable.cascade.child && this.nodeData.children) {
                     this.loopChildrenCheck(this.nodeData.children, newStatus);
                 }
-                Vue.set(this.nodeData, "checkStatus", newStatus);
+                this.$set(this.nodeData, "checkStatus", newStatus);
 
                 this.$emit("nodeDataChange", this.nodeData);
 
@@ -143,7 +141,7 @@
                     return;
                 }
                 list.forEach((item) => {
-                    Vue.set(item, "checkStatus", status);
+                    this.$set(item, "checkStatus", status);
                     this.loopChildrenCheck(item.children, status);
                 });
             },
@@ -175,7 +173,7 @@
                     } else {
                         checkStatus = this.options.checkable.halfCheckable ? 1 : 0;
                     }
-                    Vue.set(this.nodeData, "checkStatus", checkStatus);
+                    this.$set(this.nodeData, "checkStatus", checkStatus);
                     this.$emit("nodeDataChange", {
                         ...this.nodeData,
                         checkStatus: checkStatus,
@@ -202,7 +200,7 @@
                             node.checkStatus = 2;
                         });
                     }
-                    Vue.set(this.nodeData, "children", result);
+                    this.$set(this.nodeData, "children", result);
                 });
             },
             nodeMouseDown (event) {
@@ -250,9 +248,9 @@
                                     checkStatus: checkStatusMap[node.id] || 0
                                 };
                             });
-                            Vue.set(this.nodeData, "children", newList);
+                            this.$set(this.nodeData, "children", newList);
                         } else {
-                            Vue.set(this.nodeData, "children", list);
+                            this.$set(this.nodeData, "children", list);
                         }
                     });
                 }

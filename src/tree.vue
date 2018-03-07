@@ -45,7 +45,7 @@
         watch: {
             options: {
                 handler (newOptions) {
-                    Vue.set(this.optionSettings, "defaultChecked", newOptions.defaultChecked);
+                    this.$set(this.optionSettings, "defaultChecked", newOptions.defaultChecked);
                 },
                 deep: true
             }
@@ -91,11 +91,15 @@
             };
             this.bus.dragInfo = {};
             this.bus.$on("nodeSelected", node => {
-                this.$emit("nodeSelected", node);
                 this.selectedNode = node;
+                this.$nextTick(() => {
+                    this.$emit("nodeSelected", node);
+                });
             });
             this.bus.$on("nodeChecked", node => {
-                this.$emit("nodeChecked", node);
+                this.$nextTick(() => {
+                    this.$emit("nodeChecked", node);
+                });
             });
             this.bus.$on("expandEnd", () => {
                 this.$emit("expandEnd", this.showData);
@@ -130,7 +134,9 @@
                     let targetParentEl = this.bus.getParentTreeNodeEl(hintPos);
                     let originParentEl = this.bus.getParentTreeNodeEl(originEl.parentNode);
                     let moveNodeToTarget = () => {
-                        let nodeData = originEl.self.nodeData;
+                        let nodeData = originEl.self.nodeData,
+                            originNodeData = originEl.self.nodeData,
+                            targetNodeData = targetParentEl ? targetParentEl.self.nodeData : null;
                         if (originParentEl) {
                             originParentEl.self.delChild(nodeData);
                         } else {
@@ -146,12 +152,14 @@
                         }
                         // if original parent node has no child after dragging, set some parameters of it.
                         if (originParentEl && originParentEl.self.nodeData.children.length === 0) {
-                            Vue.set(originParentEl.self.nodeData, "children", []);
-                            Vue.set(originParentEl.self.nodeData, "hasChildren", false);
+                            this.$set(originParentEl.self.nodeData, "children", []);
+                            this.$set(originParentEl.self.nodeData, "hasChildren", false);
                             originParentEl.self.open = false;
                         }
 
-                        this.$emit("dragEnd", originEl.self.nodeData, targetParentEl ? targetParentEl.self.nodeData : null, index);
+                        this.$nextTick(() => {
+                            this.$emit("dragEnd", originNodeData, targetNodeData, index);
+                        });
                     };
                     if (targetParentEl && targetParentEl === originParentEl) {
                         let idx = targetParentEl.self.nodeData.children.map(itm => itm.id).indexOf(originEl.self.nodeData.id);
@@ -194,8 +202,10 @@
                     }
                 });
 
-                Vue.set(this.showData, index, item);
-                this.$emit("nodeDataChange", this.showData);
+                this.$set(this.showData, index, item);
+                this.$nextTick(() => {
+                    this.$emit("nodeDataChange", this.showData);
+                });
             },
             dragMouseMove (event) {
                 if (!this.bus.dragInfo.moveNode) {
