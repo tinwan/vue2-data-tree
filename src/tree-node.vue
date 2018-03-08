@@ -125,15 +125,21 @@
         },
         methods: {
             clickCheckBox () {
+                // checkStatus: 0: no-check 1:half-check 2: checked
                 let newStatus = this.nodeData.checkStatus === 2 ? 0 : 2;
 
+                // change current node's checkStatus
+                this.$set(this.nodeData, "checkStatus", newStatus);
+
+                //loop children
                 if (this.options.checkable.cascade.child && this.nodeData.children) {
                     this.loopChildrenCheck(this.nodeData.children, newStatus);
                 }
-                this.$set(this.nodeData, "checkStatus", newStatus);
 
+                // loop parent
                 this.$emit("nodeDataChange", this.nodeData);
 
+                // emit the bus's events, send event's message to tree-component user
                 this.bus.$emit("nodeChecked", this.nodeData);
             },
             loopChildrenCheck (list, status) {
@@ -156,6 +162,8 @@
             },
             nodeDataChange (item) {
                 let checkedNum = 0, checkStatus;
+
+                // get the new children for parent, and count checked children.
                 let newChildren = this.nodeData.children.map((child) => {
                     if (item && child.id === item.id) {
                         checkedNum += item.checkStatus || 0;
@@ -166,6 +174,7 @@
                 });
 
                 if (this.options.checkable && this.options.checkable.cascade.parent) {
+                    // count checkStatus
                     if (checkedNum === 0) {
                         checkStatus = 0;
                     } else if (checkedNum === 2 * this.nodeData.children.length) {
