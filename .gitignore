@@ -12,9 +12,6 @@ yarn-error.log*
 .editorconfig
 .eslintignore
 .eslintrc.js
-.postcssrc.js
-.babelrc
-index.html
 *.suo
 *.ntvs*
 *.njsproj
