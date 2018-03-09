@@ -12,6 +12,7 @@ yarn-error.log*
 .editorconfig
 .eslintignore
 .eslintrc.js
+package-lock.json
 *.suo
 *.ntvs*
 *.njsproj
