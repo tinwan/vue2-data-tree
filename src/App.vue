@@ -8,6 +8,7 @@
                 @expandEnd="expandEnd"
                 @dragEnd="dragEnd"
                 @nodeDataChange="nodeDataChange"
+                @nodeNameChange="nodeNameChange"
           >
           </tree>
       </div>
@@ -29,6 +30,8 @@
                     defaultSelected: 24,
                     defaultExpandedLevel: 2,
                     draggable: true,
+                    nameEditable: true,
+                    selectable: true,
                     getData (node) {
                         return new Promise(function (resolve, reject) {
                             setTimeout(() => {
@@ -47,7 +50,17 @@
                                     }
                                 ]);
                                 indexedId += 2;
+                                // reject(error);
                             });
+                        });
+                    },
+                    shouldUpdateNodeName (node, newName) {
+                        // add some ajax or validate operations here, and must return a promise object
+                        return new Promise(function (resolve, reject) {
+                            setTimeout(() => {
+                                resolve("success");
+                                // reject(error);
+                            }, 1000);
                         });
                     }
                 },
@@ -96,6 +109,9 @@
             },
             nodeDataChange (treeData) {
                 console.log("nodeDataChange", treeData);
+            },
+            nodeNameChange (node) {
+                console.log("nodeNameChange", node);
             }
         }
     };

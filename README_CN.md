@@ -10,6 +10,8 @@
 
 ## Demo
 <img src="https://raw.githubusercontent.com/tinwan/vue2-data-tree/master/demoImage.gif" width=337 height=385 />
+<br/>
+<img src="https://raw.githubusercontent.com/tinwan/vue2-data-tree/master/demoImage_2.gif" width=343 height=254 />
 
 ## 安装
 npm install vue2-data-tree --save
@@ -24,6 +26,7 @@ npm install vue2-data-tree --save
       @expandEnd="expandEnd"            // 初始化后展开到默认层级之后的事件
       @dragEnd="dragEnd"                // 拖拽结束后的事件
       @nodeDataChange="nodeDataChange"  // 节点数据改变后触发的事件
+      @nodeNameChange="nodeNameChange" // 编辑节点名称后触发事件
   >
   </vue2-data-tree>
 </div>
@@ -48,6 +51,9 @@ new Vue({
                                     // 这一项如果不设置，初始化时默认选中任何节点
               defaultExpandedLevel: 2, // 组件初始化时展开的层级，默认值为0
               draggable: true, // 是否可拖拽节点，默认值是false
+              nameEditable: false, // 是否支持编辑节点名称，默认值是false
+                       // 如果需要在编辑生效之前保存数据到后台，请在options里定义"shouldUpdateNodeName"函数
+              selectable: true,  // 是否可点击节点名称选中节点，默认值是true
               checkable: { // 是否可勾选，默认值如左侧对象这样；如果这一项设为false，将不展示勾选框
                   halfCheckable: true, // 是否支持半勾选，默认值是false
                   cascade: {
@@ -73,7 +79,21 @@ new Vue({
                               }
                           ]);
                           indexedId += 2;
+                          // reject(error);
                       });
+                  });
+              },
+              /**
+               *  编辑节点名称生效之前触发的事件，必须返回promise对象
+               *  保存失败情况下，新的节点名称不会生效
+               */
+              shouldUpdateNodeName (node, newName) {
+                  // add some ajax or validate operations here, and must return a promise object
+                  return new Promise(function (resolve, reject) {
+                      setTimeout(() => {
+                          resolve("success");
+                          // reject("error");
+                      }, 1000);
                   });
               }
           },
@@ -122,11 +142,20 @@ new Vue({
       },
       nodeDataChange (treeData) {
           console.log("nodeDataChange", treeData);
+      },
+      nodeNameChange (node) {
+          console.log("nodeNameChange", node);
       }
   }
 })
 ```
-
+### 可调用的函数
+| 函数名称 | 描述 | 参数 |
+|---------- |-------- |---------- |
+| getSelectedNode | 返回当前选中的节点 | - |
+| getCheckedNodes | 返回当前勾选的所有节点列表 | - |
+| delCurrentNode | 删除当前选中的节点 | - |
+| refreshCurrentNode | 刷新当前选中的节点 | - |
 
 ## LICENSE
 

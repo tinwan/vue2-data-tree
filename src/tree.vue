@@ -104,6 +104,10 @@
             this.bus.$on("expandEnd", () => {
                 this.$emit("expandEnd", this.showData);
             });
+            this.bus.$on("nodeNameChange", (nodeData) => {
+                this.$emit("nodeNameChange", nodeData);
+                this.$emit("nodeDataChange", this.showData);
+            });
             this.bus.getParentTreeNodeEl = el => {
                 let parentEl = el;
                 while (parentEl !== document.body && (!parentEl.className ||

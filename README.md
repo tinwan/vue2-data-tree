@@ -10,6 +10,8 @@
 
 ## Demo
 <img src="https://raw.githubusercontent.com/tinwan/vue2-data-tree/master/demoImage.gif" width=337 height=385 />
+<br/>
+<img src="https://raw.githubusercontent.com/tinwan/vue2-data-tree/master/demoImage_2.gif" width=343 height=254 />
 
 ## Install
 npm install vue2-data-tree --save
@@ -18,9 +20,13 @@ npm install vue2-data-tree --save
 
 ```html
 <div id="app">
-  <vue2-data-tree :options="options" :treeData="treeData" @nodeSelected="nodeSelected"
-      @nodeChecked="nodeChecked" @expandEnd="expandEnd" @dragEnd="dragEnd"
-      @nodeDataChange="nodeDataChange"
+  <vue2-data-tree :options="options" :treeData="treeData"
+      @nodeSelected="nodeSelected"      // listener for node-selecting
+      @nodeChecked="nodeChecked"       // listener for node-checking
+      @expandEnd="expandEnd"        // listener for initial node-expanding
+      @dragEnd="dragEnd"        // listener for node-drag-end
+      @nodeDataChange="nodeDataChange" // listener for node's data change
+      @nodeNameChange="nodeNameChange" // listener for node's name edited
   >
   </vue2-data-tree>
 </div>
@@ -44,10 +50,13 @@ new Vue({
               defaultSelected: 24,  // default selected node-id, type of this
                                     // config must be same to the node-id's type
               defaultExpandedLevel: 2, // default expanded level, must be a number
-              draggable: true, // support drag node or not,
+              draggable: true, // support dragging node or not,
                                // must be a boolean, default value is false
+              nameEditable: false, // support editing name or not, default value is false
+                     // if we want to save change to backend, we could use "shouldUpdateNodeName" function.
+              selectable: true,  // support selecting node or not, default value is true
               checkable: { // support check node or not, set the value to
-                           // false will disable check; default value is like this
+                           // false will disable check; default value is like this value
                   halfCheckable: true, // support half-check or not, must
                                        // be a boolean, default value is false
                   cascade: {
@@ -73,7 +82,22 @@ new Vue({
                               }
                           ]);
                           indexedId += 2;
+                          // reject(error);
                       });
+                  });
+              },
+              /**
+               * Function for submitting edit-name str, and this will executed before update the node’s name,
+               *  if failed, reject function will execute, the node's name will not be changed;
+               *
+              /
+              shouldUpdateNodeName (node, newName) {
+                  // add some ajax or validate operations here, and must return a promise object
+                  return new Promise(function (resolve, reject) {
+                      setTimeout(() => {
+                          resolve("success");
+                          // reject("error");
+                      }, 1000);
                   });
               }
           },
@@ -122,11 +146,20 @@ new Vue({
       },
       nodeDataChange (treeData) {
           console.log("nodeDataChange", treeData);
+      },
+      nodeNameChange (node) {
+          console.log("nodeNameChange", node);
       }
   }
 })
 ```
-
+### Method
+| Method name | Description | Parameters |
+|---------- |-------- |---------- |
+| getSelectedNode | returns the currently selected node | - |
+| getCheckedNodes | returns the array of nodes selected by the current check box | - |
+| delCurrentNode | delete currently selected node | - |
+| refreshCurrentNode | refresh currently selected node | - |
 
 ## LICENSE
 

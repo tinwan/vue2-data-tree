@@ -1,7 +1,14 @@
 <template>
     <div :class="['data-tree-node', nodeData.hasChildren? '': 'leaf']" ref="outerBox">
         <div class="data-tree-el">
-            <div class="data-tree-el-info" @mousedown="nodeMouseDown($event)" ref="nodeElInfo">
+            <div class="data-tree-el-info" v-if="nameEditing" ref="nodeElInfo">
+                <div class="data-tree-edit">
+                    <input class="edit-input" ref="nameInput"/>
+                    <button class="edit-confirm" @click="confirmEditName">&#10004</button>
+                    <button class="edit-cancel" @click="cancelEditName">&#10006</button>
+                </div>
+            </div>
+            <div class="data-tree-el-info" v-else @mousedown="nodeMouseDown($event)" ref="nodeElInfo">
                 <span v-if="nodeData.hasChildren"
                       :class="{'node-expand': true, 'close': !open}"
                       @click="clickExpand"></span>
@@ -12,6 +19,10 @@
                 <span :class="['node-title', selected ? 'selected' : '']"
                       @click="clickTitle"
                 >{{nodeData.name}}</span>
+                <span v-if="updating" class="updating-icon"></span>
+            </div>
+            <div class="data-tree-ops" v-show="!nameEditing && !updating">
+                <span class="node-name-edit" v-if="options.nameEditable" @click="clickEditName"></span>
             </div>
         </div>
         <ul v-if="nodeData.children && nodeData.children.length" v-show="open">
@@ -43,7 +54,9 @@
         data () {
             return {
                 open: false,
-                selected: false
+                selected: false,
+                nameEditing: false,
+                updating: false
             };
         },
         watch: {
@@ -263,6 +276,34 @@
                         }
                     });
                 }
+            },
+            clickEditName () {
+                this.nameEditing = true;
+            },
+            cancelEditName () {
+                this.nameEditing = false;
+            },
+            confirmEditName () {
+                let inputVal = this.$refs.nameInput.value;
+                this.nameEditing = false;
+                if (this.options.shouldUpdateNodeName) {
+                    this.updating = true;
+                    this.options.shouldUpdateNodeName(this.nodeData, inputVal)
+                        .then((rs) => {
+                            this.nodeData.name = inputVal;
+                            this.updating = false;
+                            this.$nextTick(() => {
+                                this.bus.$emit("nodeNameChange", this.nodeData);
+                            });
+                        }, () => {
+                            this.updating = false;
+                        });
+                } else {
+                    this.nodeData.name = inputVal;
+                    this.$nextTick(() => {
+                        this.bus.$emit("nodeNameChange", this.nodeData);
+                    });
+                }
             }
         }
     };
@@ -350,7 +391,7 @@
         position: relative;
         top: -2px;
         cursor: pointer;
-        border: 1px solid #FFFFFF;
+        border: 1px solid transparent;
         padding: 0 2px;
     }
     .vue-data-tree .node-title.selected {
@@ -414,7 +455,6 @@
     .vue-data-tree > .data-tree-el-info {
         position: absolute;
         z-index: 20;
-
     }
     .vue-data-tree .data-hint-pos {
         background-color: #FFFFFF;
@@ -423,5 +463,157 @@
         border: 1px dashed #cccccc;
         position: relative;
         z-index: 2;
+    }
+    .vue-data-tree .data-tree-edit {
+        display: inline-block;
+        border: 1px solid #888888;
+        border-radius: 5px;
+        margin-top: -3px;
+        background: #FFFFFF;
+        position: relative;
+        z-index: 20;
+        box-shadow: 0 0 8px rgba(0,0,0,.2);
+    }
+    .vue-data-tree .data-tree-ops {
+        display: none;
+        vertical-align: top;
+    }
+    .vue-data-tree .data-tree-ops > span {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+    .vue-data-tree .data-tree-el .updating-icon {
+        position: relative;
+        border-radius: 50%;
+        border: 1px solid transparent;
+        border-top-color: #9370DB;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+    }
+    .vue-data-tree .data-tree-el .updating-icon:before {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        right: 3px;
+        bottom: 3px;
+        border-radius: 50%;
+        border: 1px solid transparent;
+        border-top-color: #BA55D3;
+        -webkit-animation: spin 3s linear infinite;
+        animation: spin 3s linear infinite;
+    }
+    .vue-data-tree .data-tree-el .updating-icon:after {
+        content: "";
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        right: 6px;
+        bottom: 6px;
+        border-radius: 50%;
+        border: 1px solid transparent;
+        border-top-color: #FF00FF;
+        -webkit-animation: spin 1.5s linear infinite;
+        animation: spin 1.5s linear infinite;
+    }
+    @-webkit-keyframes spin {
+        0%   {
+            -webkit-transform: rotate(0deg);
+            -ms-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+            -ms-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+    @keyframes spin {
+        0%   {
+            -webkit-transform: rotate(0deg);
+            -ms-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+            -ms-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+    .vue-data-tree .data-tree-el .updating-icon {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border-radius: 20px;
+        text-align: center;
+        line-height: 18px;
+    }
+    .vue-data-tree .data-tree-el:hover .data-tree-ops {
+        display: inline-block;
+    }
+    .vue-data-tree .data-tree-ops .node-name-edit {
+        font: bold 18px Arial, Helvetica;
+        text-decoration: none;
+        color: #333;
+        text-shadow: 0 1px 0 rgba(255,255,255,.8);
+    }
+    .vue-data-tree .data-tree-ops .node-name-edit:before {
+        content: "\270E";
+        float: left;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        font-size: 20px;
+        line-height: 100%;
+        transform: rotateY(180deg);
+        font-style: normal;
+    }
+    .vue-data-tree .data-tree-edit .edit-input {
+        width: 150px;
+        border: none;
+        margin: 0;
+        padding: 0;
+        outline: 0;
+        height: 20px;
+        border-radius: 5px 0 0 5px;
+        -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.2);
+        box-shadow: inset 0 1px 2px rgba(0,0,0,.2);
+        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    }
+    .vue-data-tree .data-tree-edit .edit-input:focus {
+        border-color:#66afe9;
+        outline:0;
+        -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+        box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)
+    }
+    .vue-data-tree .data-tree-edit .edit-confirm,
+    .vue-data-tree .data-tree-edit .edit-cancel {
+        height: 20px;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        background: #FFFFFF;
+        cursor: pointer;
+    }
+    .vue-data-tree .data-tree-edit .edit-confirm:focus,
+    .vue-data-tree .data-tree-edit .edit-cancel:focus {
+        outline: none;
+    }
+    .vue-data-tree .data-tree-edit .edit-confirm {
+        width: 24px;
+        border-left: 1px solid #888888;
+        border-top: 0;
+        border-right: 1px solid #888888;
+        border-bottom: 0;
+        margin-left: -2px;
+    }
+    .vue-data-tree .data-tree-edit .edit-cancel {
+        width: 20px;
+        border-radius: 0 5px 5px 0;
+        border: none;
     }
 </style>
